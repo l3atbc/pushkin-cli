@@ -7,7 +7,7 @@ const chalk = require('chalk');
 
 function showControllerList() {
   try {
-    const controllers = fs.readdirSync(path.resolve('./controllers'));
+    const controllers = fs.readdirSync(path.resolve('./pushkin-api/controllers'));
     controllers.forEach(a => {
       console.log(chalk.magenta(path.parse(a).name));
     });
@@ -22,6 +22,9 @@ const thing = program.args[0];
 if (thing) {
   switch (thing) {
     case 'controller':
+      showControllerList();
+      break;
+    case 'controllers':
       showControllerList();
       break;
     case 'model':

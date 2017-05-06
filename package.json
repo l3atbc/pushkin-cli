@@ -1,0 +1,27 @@
+{
+  "name": "pushkin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "pushkin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/l3atbc/pushkin-cli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/l3atbc/pushkin-cli/issues"
+  },
+  "homepage": "https://github.com/l3atbc/pushkin-cli#readme",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "commander": "git+https://github.com/tj/commander.js.git",
+    "fs-extra": "^3.0.1",
+    "moment": "^2.18.1"
+  },
+  "bin": "bin/pushkin"
+}

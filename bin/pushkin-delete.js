@@ -7,7 +7,7 @@ const chalk = require('chalk');
 
 function deleteController(quizname) {
   try {
-    const targetFile = path.resolve(`./controllers/${quizname}.js`);
+    const targetFile = path.resolve(`./pushkin-api/controllers/${quizname}.js`);
     fs.unlink(targetFile, (err, success) => {
       if (err) {
         console.error(err);
