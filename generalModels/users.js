@@ -1,6 +1,3 @@
-// var bookshelf = require('../db');
-// require('./response');
-// require('./userLanguage');
 module.exports = db => {
   const User = db.Model.extend({
     tableName: 'users',

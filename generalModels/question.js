@@ -1,4 +1,3 @@
-// require('./trial');
 module.exports = db => {
   const Question = db.Model.extend({
     tableName: 'questions',

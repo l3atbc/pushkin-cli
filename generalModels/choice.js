@@ -1,6 +1,3 @@
-// // var bookshelf = require('../db');
-// require('./question');
-// require('./response');
 module.exports = db => {
   var Choice = db.Model.extend({
     tableName: 'choices',
