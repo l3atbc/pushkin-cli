@@ -4,6 +4,7 @@ const path = require('path');
 const program = require('commander');
 const chalk = require('chalk');
 const moment = require('moment');
+const WorkerConstructor = require('./workerConstructor');
 
 function addController(quizname) {
   try {
@@ -178,9 +179,14 @@ if (thing && name) {
     case 'model':
       addModel(name);
       break;
+    case 'worker':
+      var workerConstructor = new WorkerConstructor(name);
+      workerConstructor.generate()
+      break;
     default:
       console.log('please input a command');// eslint-disable-line no-console
   }
 } else {
   console.log(chalk.red('missing entity or name'));// eslint-disable-line no-console
 }
+
