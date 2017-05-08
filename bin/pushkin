@@ -6,7 +6,7 @@ var program = require('commander');
 
 program.command(
   'generate [thing] [name]',
-  'generate a new controller or model'
+  'generate a new controller, model, or worker'
 );
 program.command('delete [thing] [name]', 'delete a controller');
 program.command('list [thing]', 'show list of entities');
