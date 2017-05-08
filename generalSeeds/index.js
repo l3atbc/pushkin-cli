@@ -14,7 +14,6 @@ const data = Papa.parseFiles(
   ],
   { header: true }
 );
-console.log('data after parse', data);
 fs.readFileSync(`./seeds/${quiz}/Trials.csv`);
 const trials = data[0].data;
 let questions = data[1].data;
@@ -68,9 +67,9 @@ db
       .returning('*');
   })
   .then(data => {
-    console.log(data);
+    console.log(data) // eslint-disable-line no-console
     return process.exit();
   })
   .catch(err => {
-    console.log(err);
+    console.log(err); // eslint-disable-line no-console
   });

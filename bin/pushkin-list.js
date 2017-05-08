@@ -8,11 +8,13 @@ const chalk = require('chalk');
 function showControllerList() {
   try {
     const controllers = fs.readdirSync(path.resolve('./pushkin-api/controllers'));
+    /* eslint-disable */
     controllers.forEach(a => {
       console.log(chalk.magenta(path.parse(a).name));
     });
   } catch (err) {
     console.log(chalk.red('please make sure to run this in a pushkin folder'));
+    /* eslint-enable */
   }
 }
 
@@ -30,8 +32,8 @@ if (thing) {
     case 'model':
       break;
     default:
-      console.log('please enter a command');
+      console.log('please enter a command'); // eslint-disable-line no-console
   }
 } else {
-  console.log(chalk.red('missing entity name'));
+  console.log(chalk.red('missing entity name')); // eslint-disable-line no-console
 }

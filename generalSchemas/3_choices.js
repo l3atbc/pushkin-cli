@@ -1,6 +1,4 @@
-// const knex = require('knex')(require('./knex.config.js'));
-
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('choices', table => {
     table.increments().primary;
     table.string('type');
@@ -11,6 +9,6 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('choices');
 };

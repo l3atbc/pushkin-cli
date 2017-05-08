@@ -12,21 +12,20 @@ function addController(quizname) {
       '../generalController/generalController.js'
     );
     const to = path.resolve(`./pushkin-api/controllers/${quizname}.js`);
-    console.log({ from, to });
     var fromFile = fs.readFileSync(from);
     if (!fromFile) {
       throw new Error('couldnt read a from file');
     }
-    fs.copy(from, to, (err, success) => {
+    fs.copy(from, to, (err) => {
       if (err) {
-        console.error(err);
+        console.error(err); // eslint-disable-line no-console
         process.exit(1);
       }
       process.exit();
     });
   } catch (err) {
-    console.log(err);
-    console.log(chalk.red('please make sure to run this in a pushkin folder'));
+    console.log(err); // eslint-disable-line no-console
+    console.log(chalk.red('please make sure to run this in a pushkin folder')); // eslint-disable-line no-console
   }
 }
 
@@ -36,7 +35,7 @@ function checkIfFileExist(fileList, quizname) {
   });
 }
 
-function copySchemas(quizname, mapObj, fileList) {
+function copySchemas(quizname, mapObj) {
   const schemas = fs.readdirSync(path.resolve(__dirname, '../generalSchemas'));
   const sortedSchemas = schemas.sort();
   return Promise.all(
@@ -48,7 +47,7 @@ function copySchemas(quizname, mapObj, fileList) {
           (err, data) => {
             if (err) {
               reject(err);
-              return console.log('err on reading file', err);
+              return console.log('err on reading file', err); // eslint-disable-line no-console
             }
             const re = new RegExp(Object.keys(mapObj).join('|'), 'g');
             const result = data.replace(re, matched => {
@@ -65,7 +64,7 @@ function copySchemas(quizname, mapObj, fileList) {
             return fs.writeFile(formatedFileName, result, err => {
               if (err) {
                 reject(err);
-                return console.log('error while writing file', err);
+                return console.log('error while writing file', err); // eslint-disable-line no-console
               }
               return resolve();
             });
@@ -85,7 +84,7 @@ function copyModels(quizname, mapObj) {
       'utf8',
       (err, data) => {
         if (err) {
-          return console.log('err on reading file', err);
+          return console.log('err on reading file', err); // eslint-disable-line no-console
         }
         const re = new RegExp(Object.keys(mapObj).join('|'), 'g');
         const result = data.replace(re, matched => {
@@ -98,7 +97,8 @@ function copyModels(quizname, mapObj) {
           ),
           result,
           err => {
-            if (err) return console.log('error while writing file', err);
+            if (err) return console.log('error while writing file', err); // eslint-disable-line no-console
+
           }
         );
       }
@@ -112,13 +112,13 @@ function copySeeds(quizname) {
     const to = path.resolve(`./pushkin-db/seeds/${quizname}`);
     fs.copy(from, to, err => {
       if (err) {
-        return console.log(chalk.red('err on copying seed files'));
-        process.exit(1);
+        console.log(chalk.red('err on copying seed files')); // eslint-disable-line no-console
+        return process.exit(1);
       }
       process.exit();
     });
   } catch (err) {
-    console.log(chalk.red('please make sure to run this in a pushkin folder'));
+    console.log(chalk.red('please make sure to run this in a pushkin folder')); // eslint-disable-line no-console
   }
 }
 function addModel(quizname) {
@@ -131,12 +131,13 @@ function addModel(quizname) {
     checkIfFileExist(schemaFileList, quizname) ||
     checkIfFileExist(modelFileList, quizname) ||
     checkIfFileExist(seedFileList, quizname)
-  ) {
+  ) { /* eslint-disable */
     return console.log(
       chalk.red(
         'quiz model already exist, please try editing the existing files'
       )
     );
+    /* eslint-enable */
   } else {
     try {
       const mapObj = {
@@ -154,11 +155,13 @@ function addModel(quizname) {
           copySeeds(quizname);
         })
         .catch(err => {
+          /* eslint-disable */
           console.log(chalk.red(err));
           console.log(err.stack);
+          /* eslint-enable */
         });
     } catch (err) {
-      console.log('error!!', err);
+      console.log('error!!', err); // eslint-disable-line no-console
     }
   }
 }
@@ -167,7 +170,7 @@ program.parse(process.argv);
 const thing = program.args[0];
 const name = program.args[1];
 if (thing && name) {
-  console.log(chalk.blue('generating a new' + thing + ' named ' + name));
+  console.log(chalk.blue('generating a new' + thing + ' named ' + name)); // eslint-disable-line no-console
   switch (thing) {
     case 'controller':
       addController(name);
@@ -176,8 +179,8 @@ if (thing && name) {
       addModel(name);
       break;
     default:
-      console.log('please input a command');
+      console.log('please input a command');// eslint-disable-line no-console
   }
 } else {
-  console.log(chalk.red('missing entity or name'));
+  console.log(chalk.red('missing entity or name'));// eslint-disable-line no-console
 }

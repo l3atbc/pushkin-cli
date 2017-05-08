@@ -36,7 +36,7 @@ module.exports = (rpc, conn, dbWrite) => {
     // create a channel
   });
   router.get('/responses', (req, res, next) => {
-    const { user, choiceId, questionId } = req.body;
+    // const { user, choiceId, questionId } = req.body;
     var rpcInput = {
       method: 'allResponses',
       arguments: []
@@ -71,7 +71,8 @@ module.exports = (rpc, conn, dbWrite) => {
       })
       .then(data => {
         res.json(data);
-      });
+      })
+      .catch(next);
   });
   router.put('/users/:id', (req, res, next) => {
     var rpcInput = {
@@ -153,7 +154,7 @@ module.exports = (rpc, conn, dbWrite) => {
     };
     return rpc(conn, 'task_queue', workerInput).then(data => {
       res.json({ results: data });
-    });
+    }).catch(next);
   });
   router.post('/comments', (req, res, next) => {
     var rpcInput = {

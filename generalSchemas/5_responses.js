@@ -1,6 +1,6 @@
 // const knex = require('knex')(require('./knex.config.js'));
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('responses', table => {
     table.increments().primary();
     table.timestamps();
@@ -9,6 +9,6 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('responses');
 };
