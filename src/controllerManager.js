@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const logger = require('./logger');
-
+const inquirer = require('inquirer');
+const chalk = require('chalk');
+const deleteQuestionPrompt = require('./inquirer');
 /**
  * @class ControllerManager
  */
@@ -21,7 +23,7 @@ class ControllerManager {
    * @memberof ControllerManager
    */
   ensureDirectory() {
-    const isPushkin = fs.exists(path.resolve('./pushkin-api'));
+    const isPushkin = fs.existsSync(path.resolve('./pushkin-api'));
     if (!isPushkin) {
       logger.error('Sorry couldnt find a pushkin-api folder');
       throw new Error('Not a pushkin project');
@@ -83,10 +85,41 @@ class ControllerManager {
     this.ensureDirectory();
     const isExists = this.checkExistence(name);
     if (isExists) {
-      return logger.log(`Sorry there is already a controller named ${name}`);
+      return logger.log(
+        chalk.red(`Sorry there is already a controller named ${name}`)
+      );
     }
     this.loadTemplate();
     this.copyTemplate(name);
+  }
+  /**
+   * delete an existing controller with specified name
+   * @method ControllerManager#delete
+   * @param {String} name - name of controller to delete
+   * @memberof ControllerManager
+   */
+  delete(name, thing) {
+    inquirer.prompt(deleteQuestionPrompt(name, thing)).then(answer => {
+      if (answer.confirmation) {
+        this.ensureDirectory();
+        const isExists = this.checkExistence(name);
+        if (isExists) {
+          const targetFile = path.resolve(
+            `./pushkin-api/controllers/${name}.js`
+          );
+          fs.unlink(targetFile, err => {
+            if (err) {
+              return logger.log(
+                `Sorry there was an error removing the controller ${name}`,
+                err
+              );
+            }
+          });
+          return logger.log(chalk.blue('controller deleted'));
+        }
+      }
+      process.exit(1);
+    });
   }
 }
 
