@@ -16,9 +16,13 @@ const fs = {
   existsSync: sinon.stub(),
   unlinkSync: sinon.stub()
 };
+const fse = {
+  removeSync: sinon.stub().returns(Promise.resolve())
+};
 const ControllerManager = proxyquire('../src/controllerManager', {
   './logger': logger,
-  fs: fs
+  fs: fs,
+  'fs-extra': fse
 });
 // Utility function that extends the stubs above, on a per test case basis
 const mockEnv = (existingController, templateText) => {

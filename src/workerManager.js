@@ -3,6 +3,8 @@ const fs = require('fs');
 const ncp = require('ncp').ncp;
 const path = require('path');
 const logger = require('./logger');
+const inquirer = require('inquirer');
+const fse = require('fs-extra');
 
 module.exports = class WorkerManager {
   constructor() {
@@ -98,5 +100,26 @@ module.exports = class WorkerManager {
   }
   handleError(error) {
     logger.error(error);
+  }
+  delete(name) {
+    const directoryContents = fs.readdirSync(path.resolve('./'));
+    const isExists = directoryContents.some(folder =>
+      path.parse(folder).name.includes(name)
+    );
+    if (isExists) {
+      return inquirer
+        .prompt([
+          {
+            name: 'delete',
+            type: 'confirm',
+            message: 'Are you sure you want to delete this worker?'
+          }
+        ])
+        .then(response => {
+          if (response.delete === true) {
+            return fse.remove(path.resolve(`./${name}-worker`));
+          }
+        });
+    }
   }
 };
