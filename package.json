@@ -4,7 +4,8 @@
   "description": "",
   "main": "pushkin.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test/ ",
+    "test:watch": "npm test -- --watch "
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,11 @@
   },
   "bin": "bin/pushkin",
   "devDependencies": {
+    "mocha": "^3.3.0",
+    "chai": "^3.5.0",
     "eslint": "^3.19.0",
-    "eslint-config-prettier": "^2.0.0"
+    "eslint-config-prettier": "^2.0.0",
+    "proxyquire": "^1.7.11",
+    "sinon": "^2.2.0"
   }
 }
