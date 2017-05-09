@@ -4,11 +4,12 @@ const fs = require('fs-extra');
 const path = require('path');
 const program = require('commander');
 const chalk = require('chalk');
+const WorkerManager = require('../src/WorkerManager');
 
 function deleteController(quizname) {
   try {
     const targetFile = path.resolve(`./pushkin-api/controllers/${quizname}.js`);
-    fs.unlink(targetFile, (err) => {
+    fs.unlink(targetFile, err => {
       if (err) {
         console.error(err); // eslint-disable-line no-console
         process.exit(1);
@@ -32,6 +33,10 @@ if (thing && name) {
       deleteController(name);
       break;
     case 'model':
+      break;
+    case 'worker':
+      const workerManager = new WorkerManager();
+      workerManager.delete(name);
       break;
     default:
       console.log('please enter a command'); // eslint-disable-line no-console

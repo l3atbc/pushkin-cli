@@ -4,7 +4,8 @@ const path = require('path');
 const program = require('commander');
 const chalk = require('chalk');
 const moment = require('moment');
-const WorkerConstructor = require('./workerConstructor');
+const WorkerManager = require('../src/workerManager');
+const ControllerManager = require('../src/controllerManager');
 
 function addController(quizname) {
   try {
@@ -17,7 +18,7 @@ function addController(quizname) {
     if (!fromFile) {
       throw new Error('couldnt read a from file');
     }
-    fs.copy(from, to, (err) => {
+    fs.copy(from, to, err => {
       if (err) {
         console.error(err); // eslint-disable-line no-console
         process.exit(1);
@@ -99,7 +100,6 @@ function copyModels(quizname, mapObj) {
           result,
           err => {
             if (err) return console.log('error while writing file', err); // eslint-disable-line no-console
-
           }
         );
       }
@@ -132,7 +132,8 @@ function addModel(quizname) {
     checkIfFileExist(schemaFileList, quizname) ||
     checkIfFileExist(modelFileList, quizname) ||
     checkIfFileExist(seedFileList, quizname)
-  ) { /* eslint-disable */
+  ) {
+    /* eslint-disable */
     return console.log(
       chalk.red(
         'quiz model already exist, please try editing the existing files'
@@ -174,19 +175,19 @@ if (thing && name) {
   console.log(chalk.blue('generating a new' + thing + ' named ' + name)); // eslint-disable-line no-console
   switch (thing) {
     case 'controller':
-      addController(name);
+      const controllerManager = new ControllerManager();
+      controllerManager.generate(name);
       break;
     case 'model':
       addModel(name);
       break;
     case 'worker':
-      var workerConstructor = new WorkerConstructor(name);
-      workerConstructor.generate()
+      var workerManager = new WorkerManager();
+      workerManager.generate(name);
       break;
     default:
-      console.log('please input a command');// eslint-disable-line no-console
+      console.log('please input a command'); // eslint-disable-line no-console
   }
 } else {
-  console.log(chalk.red('missing entity or name'));// eslint-disable-line no-console
+  console.log(chalk.red('missing entity or name')); // eslint-disable-line no-console
 }
-
