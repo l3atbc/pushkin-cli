@@ -21,7 +21,7 @@ class ControllerManager {
    * @memberof ControllerManager
    */
   ensureDirectory() {
-    const isPushkin = fs.exists(path.resolve('./pushkin-api'));
+    const isPushkin = fs.existsSync(path.resolve('./pushkin-api'));
     if (!isPushkin) {
       logger.error('Sorry couldnt find a pushkin-api folder');
       throw new Error('Not a pushkin project');

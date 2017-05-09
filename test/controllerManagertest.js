@@ -13,6 +13,7 @@ const fs = {
   readFileSync: sinon.stub(),
   readdirSync: sinon.stub(),
   exists: sinon.stub(),
+  existsSync: sinon.stub(),
   unlinkSync: sinon.stub()
 };
 const ControllerManager = proxyquire('../src/controllerManager', {
@@ -22,7 +23,7 @@ const ControllerManager = proxyquire('../src/controllerManager', {
 // Utility function that extends the stubs above, on a per test case basis
 const mockEnv = (existingController, templateText) => {
   let files = [existingController];
-  fs.exists.withArgs(path.resolve('./pushkin-api')).returns(true);
+  fs.existsSync.withArgs(path.resolve('./pushkin-api')).returns(true);
   fs.readFileSync
     .withArgs(
       path.resolve(__dirname, '../templates/controllers/controller.js'),

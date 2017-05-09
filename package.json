@@ -5,6 +5,7 @@
   "main": "pushkin.js",
   "scripts": {
     "test": "mocha test/ ",
+    "coverage": "nyc report",
     "test:watch": "npm test -- --watch "
   },
   "repository": {
@@ -36,6 +37,7 @@
     "mocha": "^3.3.0",
     "proxyquire": "^1.7.11",
     "sinon": "^2.2.0",
-    "supertest": "^3.0.0"
+    "supertest": "^3.0.0",
+    "nyc": "^10.3.2"
   }
 }
