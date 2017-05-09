@@ -7,15 +7,23 @@ const path = require('path');
 var proxyquire = require('proxyquire');
 const fs = require('fs');
 
+const mockFse = {
+  remove: sinon.stub().returns(Promise.resolve())
+};
+
 const mockFs = {
   writeFileSync: sinon.stub(),
   readFileSync: sinon.stub(),
   readdirSync: sinon.stub(),
   existsSync: sinon.stub(),
-  unlinkSync: sinon.stub()
+  rmdirSync: sinon.stub(),
+  unlink: sinon.stub()
 };
 const mockNCP = {
   ncp: sinon.stub()
+};
+const mockInquirer = {
+  prompt: sinon.stub().returns(Promise.resolve({ delete: true }))
 };
 const workerPath = path.resolve('./templates/yaml/worker.yml');
 const workerContents = fs.readFileSync(workerPath, 'utf-8');
@@ -45,14 +53,19 @@ const logger = {
 const WorkerManager = proxyquire('../src/workerManager', {
   './logger': logger,
   fs: mockFs,
-  ncp: mockNCP
+  ncp: mockNCP,
+  inquirer: mockInquirer,
+  'fs-extra': mockFse
 });
 describe('WorkerManager', () => {
   beforeEach(() => {
     mockFs.writeFileSync.resetHistory();
     mockFs.readdirSync.resetHistory();
     mockFs.readFileSync.resetHistory();
+    mockFs.unlink.resetHistory();
+    mockFse.remove.resetHistory();
     mockNCP.ncp.resetHistory();
+    logger.log.resetHistory();
     setupMocks();
   });
   it('exists', () => {
@@ -172,6 +185,47 @@ describe('WorkerManager', () => {
       workerManager.generate('apple');
       expect(mockNCP.ncp.called).to.be.true;
       expect(mockNCP.ncp.firstCall.args[1]).to.eql('apple-worker');
+    });
+  });
+  describe('#list', () => {
+    it('prints a list of workers to the console');
+  });
+  describe('#delete', () => {
+    it('has a command delete', () => {
+      const workerManager = new WorkerManager();
+      expect(workerManager).to.have.property('delete');
+    });
+    it('checks if that worker exists', () => {
+      const workerManager = new WorkerManager();
+      mockFs.readdirSync.withArgs(path.resolve('./')).returns([]);
+      workerManager.delete('test');
+      expect(mockFs.readdirSync.called).to.be.true;
+      expect(mockFs.readdirSync.firstCall.args).to.eql([path.resolve('./')]);
+    });
+    it('prompts the user if that worker does', () => {
+      mockFs.readdirSync.withArgs(path.resolve('./')).returns(['apple-worker']);
+      const workerManager = new WorkerManager();
+      return workerManager.delete('apple').then(response => {
+        expect(mockInquirer.prompt.firstCall.args).to.eql([
+          [
+            {
+              name: 'delete',
+              type: 'confirm',
+              message: 'Are you sure you want to delete this worker?'
+            }
+          ]
+        ]);
+      });
+    });
+    it('deletes that folder if the user presses y', () => {
+      mockFs.readdirSync.withArgs(path.resolve('./')).returns(['apple-worker']);
+      const workerManager = new WorkerManager();
+      return workerManager.delete('apple').then(response => {
+        expect(mockFse.remove.called).to.be.true;
+        expect(mockFse.remove.firstCall.args).to.eql([
+          path.resolve('./apple-worker')
+        ]);
+      });
     });
   });
 });
