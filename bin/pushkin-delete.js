@@ -1,24 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require('fs-extra');
-const path = require('path');
 const program = require('commander');
 const chalk = require('chalk');
-
-function deleteController(quizname) {
-  try {
-    const targetFile = path.resolve(`./pushkin-api/controllers/${quizname}.js`);
-    fs.unlink(targetFile, (err) => {
-      if (err) {
-        console.error(err); // eslint-disable-line no-console
-        process.exit(1);
-      }
-      process.exit();
-    });
-  } catch (err) {
-    console.log(chalk.red('please make sure to run this in a pushkin folder')); // eslint-disable-line no-console
-  }
-}
+const ControllerManager = require('../src/controllerManager');
+const ModelManager = require('../src/modelManager');
 
 program.parse(process.argv);
 
@@ -26,13 +11,17 @@ const thing = program.args[0];
 const name = program.args[1];
 if (thing && name) {
   console.log(chalk.blue('deleting a new' + thing + ' named ' + name)); // eslint-disable-line no-console
-
   switch (thing) {
-    case 'controller':
-      deleteController(name);
+    case 'controller': {
+      const controllerManager = new ControllerManager();
+      controllerManager.delete(name, thing);
       break;
-    case 'model':
+    }
+    case 'model': {
+      const modelManager = new ModelManager();
+      modelManager.delete(name);
       break;
+    }
     default:
       console.log('please enter a command'); // eslint-disable-line no-console
   }
