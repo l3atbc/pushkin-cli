@@ -60,17 +60,24 @@ module.exports = (rpc, conn, dbWrite) => {
       method: 'createResponse',
       params: [{ userId: user.id, choiceId }]
     };
-    return dbWrite(conn, fileName + '_db_write', rpcInput)
-      .then(() => {
-        var workerInput = {
-          method: 'getQuestion',
-          payload: {
-            userId: user.id,
-            questionId,
-            choiceId
-          }
-        };
-        return rpc(conn, 'task_queue', workerInput);
+    var findChoiceRPC = {
+      method: 'findChoice',
+      params: [req.body.choiceId]
+    };
+    return rpc(conn, channelName, findChoiceRPC)
+      .then(choice => {
+        return dbWrite(conn, fileName + '_db_write', rpcInput).then(() => {
+          // this is going to the python worker so the payload is different
+          var workerInput = {
+            method: 'getQuestion',
+            payload: {
+              userId: user.id,
+              questionId,
+              choiceId
+            }
+          };
+          return rpc(conn, 'task_queue', workerInput);
+        });
       })
       .then(data => {
         res.json(data);

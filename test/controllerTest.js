@@ -141,9 +141,20 @@ describe('WHICH English Controller', () => {
         .send({ user: { id: 1 }, questionId: 1, choiceId: 1 })
         .expect(200)
         .then(response => {
+          expect(mockRpc.firstCall.args[2]).to.eql({
+            method: 'findChoice',
+            params: [1]
+          });
+          expect(mockRpc.secondCall.args[2]).to.eql({
+            method: 'getQuestion',
+            payload: {
+              userId: 1,
+              questionId: 1,
+              choiceId: 1
+            }
+          });
           expect(mockDbWrite.called).to.be.true;
           const dbWriterArguments = mockDbWrite.firstCall.args;
-          expect(dbWriterArguments).to.have.length(3);
           expect(dbWriterArguments[0]).to.eql('fake connection');
           expect(dbWriterArguments[1]).to.eql('controller_db_write');
           expect(dbWriterArguments[2]).to.eql({
@@ -156,6 +167,7 @@ describe('WHICH English Controller', () => {
               params: [{ userId: 1, choiceId: 1 }]
             })
           ).to.be.true;
+          expect(response.body).to.eql({ responses: ['response 1'] });
         });
     });
     it('should call rpc with createResponse and the passed in user, question and choice ID', () => {
@@ -190,11 +202,11 @@ describe('WHICH English Controller', () => {
             body
           );
           expect(mockDbWrite.called).to.be.true;
-          expect(mockRpc.called).to.be.true;
-          expect(mockRpc.firstCall.args.length).to.equal(3);
-          expect(mockRpc.firstCall.args[0]).to.equal('fake connection');
-          expect(mockRpc.firstCall.args[1]).to.equal('task_queue');
-          expect(mockRpc.firstCall.args[2]).to.eql({
+          expect(mockRpc.calledTwice).to.be.true;
+          expect(mockRpc.secondCall.args.length).to.equal(3);
+          expect(mockRpc.secondCall.args[0]).to.equal('fake connection');
+          expect(mockRpc.secondCall.args[1]).to.equal('task_queue');
+          expect(mockRpc.secondCall.args[2]).to.eql({
             method: 'getQuestion',
             payload: { userId: 42, questionId: 100, choiceId: 1112 }
           });
