@@ -150,7 +150,10 @@ describe('WHICH English Controller', () => {
             payload: {
               userId: 1,
               questionId: 1,
-              choiceId: 1
+              choiceId: 1,
+              choice: {
+                responses: ['response 1']
+              }
             }
           });
           expect(mockDbWrite.called).to.be.true;
@@ -194,7 +197,12 @@ describe('WHICH English Controller', () => {
           const connection = 'fake connection';
           const body = {
             method: 'getQuestion',
-            payload: { userId: 42, questionId: 100, choiceId: 1112 }
+            payload: {
+              choice: { responses: ['response 1'] },
+              userId: 42,
+              questionId: 100,
+              choiceId: 1112
+            }
           };
           const wasCalledWithArgs = mockRpc.calledWith(
             connection,
@@ -208,7 +216,12 @@ describe('WHICH English Controller', () => {
           expect(mockRpc.secondCall.args[1]).to.equal('task_queue');
           expect(mockRpc.secondCall.args[2]).to.eql({
             method: 'getQuestion',
-            payload: { userId: 42, questionId: 100, choiceId: 1112 }
+            payload: {
+              userId: 42,
+              questionId: 100,
+              choiceId: 1112,
+              choice: { responses: ['response 1'] }
+            }
           });
 
           expect(wasCalledWithArgs).to.be.true;

@@ -73,7 +73,8 @@ module.exports = (rpc, conn, dbWrite) => {
             payload: {
               userId: user.id,
               questionId,
-              choiceId
+              choiceId,
+              choice: choice
             }
           };
           return rpc(conn, 'task_queue', workerInput);
