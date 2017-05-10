@@ -58,13 +58,11 @@ describe('WHICH English Controller', () => {
         .expect(200)
         .expect('Content-Type', /json/)
         .then(response => {
-          const expectedChannel = 'controller_rpc_worker';
-          const connection = 'fake connection';
-          const body = {
+          expect(mockRpc.firstCall.args[1]).to.eq('controller_task_queue');
+          expect(mockRpc.firstCall.args[2]).to.eql({
             method: 'getInitialQuestions'
-          };
-          expect(mockRpc.getCalls()).to.have.length(1);
-          const args = mockRpc.calledWith(connection, expectedChannel, body);
+          });
+
           expect(mockRpc.called).to.be.true;
           return response;
         })
@@ -193,7 +191,7 @@ describe('WHICH English Controller', () => {
         .send({ user: { id: 42 }, questionId: 100, choiceId: 1112 })
         .expect(200)
         .then(response => {
-          const expectedChannel = 'task_queue';
+          const expectedChannel = 'controller_task_queue';
           const connection = 'fake connection';
           const body = {
             method: 'getQuestion',
@@ -213,7 +211,7 @@ describe('WHICH English Controller', () => {
           expect(mockRpc.calledTwice).to.be.true;
           expect(mockRpc.secondCall.args.length).to.equal(3);
           expect(mockRpc.secondCall.args[0]).to.equal('fake connection');
-          expect(mockRpc.secondCall.args[1]).to.equal('task_queue');
+          expect(mockRpc.secondCall.args[1]).to.equal('controller_task_queue');
           expect(mockRpc.secondCall.args[2]).to.eql({
             method: 'getQuestion',
             payload: {
@@ -445,7 +443,7 @@ describe('WHICH English Controller', () => {
         expect(mockRpc.firstCall.args).to.have.lengthOf(3);
         expect(mockRpc.firstCall.args).to.eql([
           'fake connection',
-          'task_queue',
+          'controller_task_queue',
           {
             method: 'getResults',
             payload: {
