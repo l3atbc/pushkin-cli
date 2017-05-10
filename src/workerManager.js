@@ -76,9 +76,10 @@ module.exports = class WorkerManager {
   }
   writeDocuments() {
     Object.keys(this.dockerPaths).map(key => {
+      const document = this.dockerPaths[key].document;
       fs.writeFileSync(
         this.getDockerPath(key),
-        yaml.safeDump(this.dockerPaths[key].document, {
+        yaml.safeDump(document, {
           noRefs: true
         })
       );
@@ -119,6 +120,13 @@ module.exports = class WorkerManager {
           if (response.delete === true) {
             return fse.remove(path.resolve(`./${name}-worker`));
           }
+        })
+        .then(() => {
+          Object.keys(this.dockerPaths).map(key => {
+            this.dockerPaths[key].document = this.dockerPaths[key].original;
+            delete this.dockerPaths[key].document.services[`${name}-worker`];
+          });
+          return this.writeDocuments();
         });
     }
   }
