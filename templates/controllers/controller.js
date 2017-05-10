@@ -1,9 +1,19 @@
 const express = require('express');
+const path = require('path');
 const fs = require('fs');
 const basicAuth = require('basic-auth');
 
+const getFileName = () => {
+  const fullPath = __filename;
+  const fileName = fullPath.replace(/^.*[\\\/]/, '');
+  return fileName.replace('.js', '').toLowerCase();
+};
+
+const fileName = getFileName();
+const channelName = fileName + '_rpc_worker';
+
 const checkUser = (username, password) => {
-  const output = fs.readFileSync('./admin.txt', 'utf-8');
+  const output = fs.readFileSync(path.resolve('./admin.txt'), 'utf-8');
   const outputArray = output.split('\n');
   const users = outputArray.map(currentEl => {
     return {
@@ -15,11 +25,6 @@ const checkUser = (username, password) => {
     admin => admin.username === username && admin.password === password
   );
 };
-const getFileName = () => {
-  const fullPath = __filename;
-  const fileName = fullPath.replace(/^.*[\\\/]/, '');
-  return fileName.replace('.js', '').toLowerCase();
-};
 module.exports = (rpc, conn, dbWrite) => {
   const fileName = getFileName();
   const router = new express.Router();
@@ -27,7 +32,6 @@ module.exports = (rpc, conn, dbWrite) => {
     var rpcInput = {
       method: 'getInitialQuestions'
     };
-    const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
       .then(data => {
         res.json(data);
@@ -39,9 +43,8 @@ module.exports = (rpc, conn, dbWrite) => {
     // const { user, choiceId, questionId } = req.body;
     var rpcInput = {
       method: 'allResponses',
-      arguments: []
+      params: []
     };
-    const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
       .then(data => {
         res.json(data);
@@ -55,7 +58,7 @@ module.exports = (rpc, conn, dbWrite) => {
     // respond
     var rpcInput = {
       method: 'createResponse',
-      arguments: [{ userId: user.id, choiceId }]
+      params: [{ userId: user.id, choiceId }]
     };
     return dbWrite(conn, fileName + '_db_write', rpcInput)
       .then(() => {
@@ -77,9 +80,8 @@ module.exports = (rpc, conn, dbWrite) => {
   router.put('/users/:id', (req, res, next) => {
     var rpcInput = {
       method: 'updateUser',
-      arguments: [req.params.id, req.body]
+      params: [req.params.id, req.body]
     };
-    const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
       .then(data => {
         res.json(data);
@@ -90,7 +92,6 @@ module.exports = (rpc, conn, dbWrite) => {
     var rpcInput = {
       method: 'allTrials'
     };
-    const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
       .then(data => {
         res.json(data);
@@ -136,7 +137,7 @@ module.exports = (rpc, conn, dbWrite) => {
   router.get('/users/:id', (req, res, next) => {
     var rpcInput = {
       method: 'findUser',
-      arguments: [req.params.id, ['userLanguages.languages']]
+      params: [req.params.id, ['userLanguages.languages']]
     };
     const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
@@ -152,14 +153,16 @@ module.exports = (rpc, conn, dbWrite) => {
         userId: req.params.userId
       }
     };
-    return rpc(conn, 'task_queue', workerInput).then(data => {
-      res.json({ results: data });
-    }).catch(next);
+    return rpc(conn, 'task_queue', workerInput)
+      .then(data => {
+        res.json({ results: data });
+      })
+      .catch(next);
   });
   router.post('/comments', (req, res, next) => {
     var rpcInput = {
       method: 'setUserLanguages',
-      arguments: [
+      params: [
         req.body.userId,
         {
           nativeLanguages: req.body.nativeLanguages,
@@ -172,7 +175,7 @@ module.exports = (rpc, conn, dbWrite) => {
       .then(data => {
         var rpc2 = {
           method: 'updateUser',
-          arguments: [
+          params: [
             req.body.userId,
             {
               countriesOfResidence: req.body.countryOfResidence
