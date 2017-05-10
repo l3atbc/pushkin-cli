@@ -227,5 +227,39 @@ describe('WorkerManager', () => {
         ]);
       });
     });
+    it('removes it from the docker files', () => {
+      mockFs.readdirSync.withArgs(path.resolve('./')).returns(['apple-worker']);
+      mockFs.readFileSync
+        .withArgs(path.resolve('docker-compose.debug.yml'), 'utf-8')
+        .returns(
+          yaml.safeDump({
+            services: { 'debug-service': 'debug', 'apple-worker': 'apple' }
+          })
+        );
+      mockFs.readFileSync
+        .withArgs(path.resolve('docker-compose.yml'), 'utf-8')
+        .returns(
+          yaml.safeDump({
+            services: { 'normal-service': 'normal', 'apple-worker': 'apple' }
+          })
+        );
+      mockFs.readFileSync
+        .withArgs(path.resolve('docker-compose.production.yml'), 'utf-8')
+        .returns(
+          yaml.safeDump({
+            services: {
+              'production-service': 'production',
+              'apple-worker': 'apple'
+            }
+          })
+        );
+      const workerManager = new WorkerManager();
+      return workerManager.delete('apple').then(response => {
+        expect(mockFs.writeFileSync.called).to.be.true;
+        expect(mockFs.writeFileSync.calledTwice).to.be.true;
+        expect(mockFs.writeFileSync.firstCall.args[1]).to.not.include('apple');
+        expect(mockFs.writeFileSync.secondCall.args[1]).to.not.include('apple');
+      });
+    });
   });
 });
