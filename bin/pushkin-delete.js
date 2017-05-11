@@ -19,7 +19,7 @@ if (thing && name) {
     }
     case 'model': {
       const modelManager = new ModelManager();
-      modelManager.delete(name);
+      modelManager.delete(name, thing);
       break;
     }
     default:

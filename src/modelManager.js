@@ -304,10 +304,10 @@ class ModelManager {
    * @param {String} name - name of model to delete
    * @memberof ModelManager
    */
-  delete(name) {
+  delete(name, thing) {
     this.name = name;
     this.ensureDirectory();
-    inquirer.prompt(deleteQuestionPrompt(this.name)).then(answer => {
+    inquirer.prompt(deleteQuestionPrompt(this.name, thing)).then(answer => {
       if (answer.confirmation) {
         this.deleteMigrations();
         this.deleteModels();
