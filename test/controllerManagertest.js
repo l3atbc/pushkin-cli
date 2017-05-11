@@ -1,9 +1,9 @@
 /* eslint-env mocha */
-
 const expect = require('chai').expect;
 const path = require('path');
 var sinon = require('sinon');
 var proxyquire = require('proxyquire');
+
 const logger = {
   log: sinon.stub(),
   error: console.log // eslint-disable-line no-console
@@ -15,7 +15,11 @@ const fs = {
   readdirSync: sinon.stub(),
   exists: sinon.stub(),
   existsSync: sinon.stub(),
-  unlinkSync: sinon.stub()
+  unlinkSync: sinon.stub(),
+  unlink: sinon.stub()
+};
+const inquirer = {
+  prompt: sinon.stub()
 };
 const fse = {
   removeSync: sinon.stub().returns(Promise.resolve())
@@ -28,6 +32,7 @@ const ControllerManager = proxyquire('../src/controllerManager', {
 // Utility function that extends the stubs above, on a per test case basis
 const mockEnv = (existingController, templateText) => {
   let files = [existingController];
+  const deferred = sinon.stub().returns('yes');
   fs.existsSync.withArgs(path.resolve('./pushkin-api')).returns(true);
   fs.readFileSync
     .withArgs(
@@ -43,6 +48,7 @@ const mockEnv = (existingController, templateText) => {
       files.push(filename);
     }
   });
+  inquirer.prompt.callsFake(deferred, 'resolve').returns({ then: () => {} });
 };
 
 describe('ControllerManager', () => {
@@ -51,6 +57,7 @@ describe('ControllerManager', () => {
     fs.readdirSync.resetHistory();
     fs.readFileSync.resetHistory();
     logger.log.resetHistory();
+    inquirer.prompt.resetHistory();
   });
   it('should exist', () => {
     expect(ControllerManager).to.exist;
@@ -63,7 +70,6 @@ describe('ControllerManager', () => {
     it('prints to a list of existing controllers to the console', () => {
       const c = new ControllerManager();
       mockEnv('apple', '');
-
       c.showList();
       expect(logger.log.called).to.be.true;
       expect(logger.log.firstCall.args).to.eql(['apple']);
@@ -87,6 +93,7 @@ describe('ControllerManager', () => {
     it('has a method generate which takes a quizName', () => {
       mockEnv('test', 'banana');
       const c = new ControllerManager();
+      console.log(c);
       expect(c.generate.bind(c, 'test')).to.not.throw(Error);
     });
     it('creates a new controller file which is a copy of the controllerTemplate', () => {
@@ -143,11 +150,13 @@ describe('ControllerManager', () => {
     it('removes a controller if it exists', () => {
       const c = new ControllerManager();
       mockEnv('apple', 'template');
-      c.delete('apple');
-      expect(fs.unlinkSync.called).to.be.true;
-      expect(fs.unlinkSync.firstCall.args[0]).to.eq(
-        path.resolve('./pushkin-api/controllers/apple.js')
-      );
+      c.delete('apple', 'controller');
+      inquirer.prompt('yes', 'resolve').then(() => {
+        expect(fs.unlink.called).to.be.true;
+        expect(fs.unlink.firstCall.args[0]).to.eq(
+          path.resolve('./pushkin-api/controllers/apple.js')
+        );
+      });
     });
   });
 });
