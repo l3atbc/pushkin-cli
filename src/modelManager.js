@@ -187,7 +187,6 @@ class ModelManager {
    * @memberof ModelManager
    */
   generateMigrations() {
-    this.ensureDirectory();
     this.checkMigrationDirectoryExists();
     const isExists = this.checkMigrationCollisions();
     if (!isExists) {
@@ -204,7 +203,6 @@ class ModelManager {
    * @memberof ModelManager
    */
   generateModels() {
-    this.ensureDirectory();
     this.checkModelDirectoryExists();
     const isExists = this.checkCollisions('models');
     if (!isExists) {
@@ -222,7 +220,6 @@ class ModelManager {
    * @memberof ModelManager
    */
   generateSeeds() {
-    this.ensureDirectory();
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('seeds');
     if (!isExists) {
@@ -241,7 +238,6 @@ class ModelManager {
    * @memberof ModelManager
    */
   deleteSeeds(condition) {
-    this.ensureDirectory();
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('seeds');
     if (isExists) {
@@ -261,7 +257,6 @@ class ModelManager {
    * @memberof ModelManager
    */
   deleteModels(condition) {
-    this.ensureDirectory();
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('models');
     if (isExists) {
@@ -281,7 +276,6 @@ class ModelManager {
    * @memberof ModelManager
    */
   deleteMigrations(condition) {
-    this.ensureDirectory();
     this.checkModelDirectoryExists();
     const migrationExists = this.checkMigrationCollisions();
     if (migrationExists) {
@@ -312,6 +306,7 @@ class ModelManager {
    */
   delete(name) {
     this.name = name;
+    this.ensureDirectory();
     inquirer.prompt(deleteQuestionPrompt(this.name)).then(answer => {
       if (answer.confirmation) {
         this.deleteMigrations();
@@ -330,6 +325,8 @@ class ModelManager {
    */
   generate(name) {
     this.name = name;
+    this.ensureDirectory();
+
     this.generateModels();
     this.generateSeeds();
     this.generateMigrations();
