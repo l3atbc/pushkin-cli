@@ -198,6 +198,9 @@ describe('WorkerManager', () => {
       const workerManager = new WorkerManager();
       workerManager.generate('apple');
       expect(mockNCP.ncp.called).to.be.true;
+      expect(mockNCP.ncp.firstCall.args[0]).to.eql(
+        path.resolve(__dirname, '../templates/worker')
+      );
       expect(mockNCP.ncp.firstCall.args[1]).to.eql('apple-worker');
     });
   });

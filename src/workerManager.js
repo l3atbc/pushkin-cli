@@ -102,8 +102,7 @@ module.exports = class WorkerManager {
     );
   }
   copyFolder() {
-    const workerPath = path.resolve('pushkin-worker');
-    logger.log('copying from ', workerPath, 'to', this.folderName);
+    const workerPath = path.resolve(__dirname, '../templates/worker');
     ncp(workerPath, this.folderName, err => {
       if (err) {
         this.handleError(err);

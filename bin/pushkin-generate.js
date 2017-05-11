@@ -4,7 +4,7 @@ const path = require('path');
 const program = require('commander');
 const chalk = require('chalk');
 const moment = require('moment');
-const WorkerConstructor = require('./workerConstructor');
+const WorkerManager = require('../src/workerManager');
 const ControllerManager = require('../src/controllerManager');
 const ModelManager = require('../src/modelManager');
 
@@ -26,7 +26,7 @@ if (thing && name) {
       break;
     }
     case 'worker': {
-      var workerConstructor = new WorkerConstructor(name);
+      var workerConstructor = new WorkerManager(name);
       workerConstructor.generate();
       break;
     }
