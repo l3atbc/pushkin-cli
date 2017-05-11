@@ -62,7 +62,6 @@ describe('WHICH English Controller', () => {
           expect(mockRpc.firstCall.args[2]).to.eql({
             method: 'getInitialQuestions'
           });
-
           expect(mockRpc.called).to.be.true;
           return response;
         })
