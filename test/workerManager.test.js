@@ -26,7 +26,11 @@ const mockInquirer = {
   prompt: sinon.stub().returns(Promise.resolve({ delete: true }))
 };
 const workerPath = path.resolve('./templates/yaml/worker.yml');
+const productionWorkerPath = path.resolve(
+  './templates/yaml/worker.production.yml'
+);
 const workerContents = fs.readFileSync(workerPath, 'utf-8');
+const productionWorkerContents = fs.readFileSync(productionWorkerPath, 'utf-8');
 function setupMocks() {
   mockNCP.ncp
     .withArgs(path.resolve('pushkin-worker'), 'test-worker', () => {})
@@ -43,6 +47,9 @@ function setupMocks() {
       yaml.safeDump({ services: { 'production-service': 'production' } })
     );
 
+  mockFs.readFileSync
+    .withArgs(productionWorkerPath, 'utf-8')
+    .returns(productionWorkerContents);
   mockFs.readFileSync.withArgs(workerPath, 'utf-8').returns(workerContents);
 }
 const logger = {
@@ -131,6 +138,9 @@ describe('WorkerManager', () => {
           .environment
       ).to.eql(['AMPQ_ADDRESS=amqp://message-queue:5672', 'QUEUE=test']);
       expect(
+        workerManager.dockerPaths.debug.document.services['test-worker'].command
+      ).to.eql('bash start.debug.sh');
+      expect(
         workerManager.dockerPaths.production.document.services['test-worker']
           .build.context
       ).to.eql('./test-worker');
@@ -138,6 +148,10 @@ describe('WorkerManager', () => {
         workerManager.dockerPaths.production.document.services['test-worker']
           .environment
       ).to.eql(['AMPQ_ADDRESS=amqp://message-queue:5672', 'QUEUE=test']);
+      expect(
+        workerManager.dockerPaths.production.document.services['test-worker']
+          .command
+      ).to.eql('bash start.sh');
     });
   });
   describe('#generate', () => {

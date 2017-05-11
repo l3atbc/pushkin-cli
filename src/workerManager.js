@@ -55,6 +55,9 @@ module.exports = class WorkerManager {
   }
   createWorker() {
     var worker = this.getCliPath('../templates/yaml/worker.yml');
+    var productionWorker = this.getCliPath(
+      '../templates/yaml/worker.production.yml'
+    );
     try {
       worker = fs.readFileSync(worker, 'utf-8');
       worker = yaml.safeLoad(worker);
@@ -62,6 +65,12 @@ module.exports = class WorkerManager {
       worker.volumes[0] = `./${this.folderName}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
+      productionWorker = fs.readFileSync(productionWorker, 'utf-8');
+      productionWorker = yaml.safeLoad(productionWorker);
+      productionWorker.build.context = `./${this.name}-worker`;
+      productionWorker.volumes[0] = `./${this.folderName}:/usr/src/app`;
+      productionWorker.environment[1] = `QUEUE=${this.name}`;
+      this.productionWorker = productionWorker;
     } catch (e) {
       logger.error('Couldnt find the worker.yml', worker, e);
 
@@ -69,21 +78,28 @@ module.exports = class WorkerManager {
     }
   }
   createNewDocuments() {
-    Object.keys(this.dockerPaths).map(key => {
-      this.dockerPaths[key].document = this.dockerPaths[key].original;
-      this.dockerPaths[key].document.services[this.folderName] = this.worker;
-    });
+    this.dockerPaths.production.document = this.dockerPaths.production.original;
+    this.dockerPaths.production.document.services[
+      this.folderName
+    ] = this.productionWorker;
+    this.dockerPaths.debug.document = this.dockerPaths.debug.original;
+    this.dockerPaths.debug.document.services[this.folderName] = this.worker;
   }
   writeDocuments() {
-    Object.keys(this.dockerPaths).map(key => {
-      const document = this.dockerPaths[key].document;
-      fs.writeFileSync(
-        this.getDockerPath(key),
-        yaml.safeDump(document, {
-          noRefs: true
-        })
-      );
-    });
+    let document = this.dockerPaths.debug.document;
+    fs.writeFileSync(
+      this.getDockerPath('debug'),
+      yaml.safeDump(document, {
+        noRefs: true
+      })
+    );
+    document = this.dockerPaths.production.document;
+    fs.writeFileSync(
+      this.getDockerPath('production'),
+      yaml.safeDump(document, {
+        noRefs: true
+      })
+    );
   }
   copyFolder() {
     const workerPath = path.resolve('pushkin-worker');
