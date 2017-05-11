@@ -1,0 +1,14 @@
+image: pushkinl3/pushkin-worker:latest
+build:
+  context: ./pushkin-worker
+  dockerfile: Dockerfile
+volumes:
+  - ./pushkin-worker:/usr/src/app
+command: bash start.sh
+depends_on:
+  - "message-queue"
+environment:
+  - AMPQ_ADDRESS=amqp://message-queue:5672
+  - QUEUE=verbcorner
+links:
+  - message-queue
