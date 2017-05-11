@@ -11,6 +11,7 @@ const getFileName = () => {
 
 const fileName = getFileName();
 const channelName = fileName + '_rpc_worker';
+const taskQueueName = fileName + '_task_queue';
 
 const checkUser = (username, password) => {
   const output = fs.readFileSync(path.resolve('./admin.txt'), 'utf-8');
@@ -32,7 +33,7 @@ module.exports = (rpc, conn, dbWrite) => {
     var rpcInput = {
       method: 'getInitialQuestions'
     };
-    return rpc(conn, channelName, rpcInput)
+    return rpc(conn, taskQueueName, rpcInput)
       .then(data => {
         res.json(data);
       })
@@ -77,7 +78,7 @@ module.exports = (rpc, conn, dbWrite) => {
               choice: choice
             }
           };
-          return rpc(conn, 'task_queue', workerInput);
+          return rpc(conn, taskQueueName, workerInput);
         });
       })
       .then(data => {
@@ -161,7 +162,7 @@ module.exports = (rpc, conn, dbWrite) => {
         userId: req.params.userId
       }
     };
-    return rpc(conn, 'task_queue', workerInput)
+    return rpc(conn, taskQueueName, workerInput)
       .then(data => {
         res.json({ results: data });
       })
