@@ -98,8 +98,8 @@ class ControllerManager {
    * @param {String} name - name of controller to delete
    * @memberof ControllerManager
    */
-  delete(name, thing) {
-    inquirer.prompt(deleteQuestionPrompt(name, thing)).then(answer => {
+  delete(name) {
+    inquirer.prompt(deleteQuestionPrompt(name)).then(answer => {
       if (answer.confirmation) {
         this.ensureDirectory();
         const isExists = this.checkExistence(name);
