@@ -60,7 +60,8 @@ describe('WHICH English Controller', () => {
         .then(response => {
           expect(mockRpc.firstCall.args[1]).to.eq('controller_task_queue');
           expect(mockRpc.firstCall.args[2]).to.eql({
-            method: 'getInitialQuestions'
+            method: 'getInitialQuestions',
+            params: []
           });
           expect(mockRpc.called).to.be.true;
           return response;

@@ -31,7 +31,8 @@ module.exports = (rpc, conn, dbWrite) => {
   const router = new express.Router();
   router.get('/initialQuestions', (req, res, next) => {
     var rpcInput = {
-      method: 'getInitialQuestions'
+      method: 'getInitialQuestions',
+      params: []
     };
     return rpc(conn, taskQueueName, rpcInput)
       .then(data => {
