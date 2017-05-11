@@ -14,12 +14,12 @@ if (thing && name) {
   switch (thing) {
     case 'controller': {
       const controllerManager = new ControllerManager();
-      controllerManager.delete(name, thing);
+      controllerManager.delete(name);
       break;
     }
     case 'model': {
       const modelManager = new ModelManager();
-      modelManager.delete(name, thing);
+      modelManager.delete(name);
       break;
     }
     default:
