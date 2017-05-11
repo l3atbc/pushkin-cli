@@ -8,6 +8,7 @@ const logger = {
   log: sinon.stub(),
   error: console.log // eslint-disable-line no-console
 };
+
 const fs = {
   writeFileSync: sinon.stub(),
   readFileSync: sinon.stub(),
