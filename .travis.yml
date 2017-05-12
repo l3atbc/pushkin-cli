@@ -1,0 +1,25 @@
+language: node_js
+node_js: stable
+before_install:
+   # Repo for newer Node.js versions
+  - npm install -g yarn
+env:
+  - CXX=g++-4.8
+before_script:
+  - knex migrate:latest
+  - knex seed:run
+cache:
+  directories:
+    - $HOME/.yarn-cache
+    - ~/.yarn
+    - ~/.nvm
+language: node_js
+node_js:
+  - "7.7.3"
+install:
+  - yarn
+after_success:
+  - yarn coverage
+  - rm -rf .nyc_output/
+script:
+  - yarn test

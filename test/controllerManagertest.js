@@ -8,25 +8,31 @@ const logger = {
   log: sinon.stub(),
   error: console.log // eslint-disable-line no-console
 };
+
 const fs = {
   writeFileSync: sinon.stub(),
   readFileSync: sinon.stub(),
   readdirSync: sinon.stub(),
+  exists: sinon.stub(),
   existsSync: sinon.stub(),
+  unlinkSync: sinon.stub(),
   unlink: sinon.stub()
 };
 const inquirer = {
   prompt: sinon.stub()
 };
+const fse = {
+  removeSync: sinon.stub().returns(Promise.resolve())
+};
 const ControllerManager = proxyquire('../src/controllerManager', {
   './logger': logger,
-  fs: fs
+  fs: fs,
+  'fs-extra': fse
 });
 // Utility function that extends the stubs above, on a per test case basis
 const mockEnv = (existingController, templateText) => {
   let files = [existingController];
   const deferred = sinon.stub().returns('yes');
-
   fs.existsSync.withArgs(path.resolve('./pushkin-api')).returns(true);
   fs.readFileSync
     .withArgs(

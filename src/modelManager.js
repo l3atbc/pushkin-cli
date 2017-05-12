@@ -287,8 +287,11 @@ class ModelManager {
         return nameArray.indexOf(this.name) > -1;
       });
       migrationFiles.forEach(currentFile => {
-        if (currentFile !== '.DS_Store') {
-          fs.unlink(path.resolve(`./pushkin-db/migrations/${currentFile}`));
+        if (
+          currentFile !== '.DS_Store' &&
+          path.parse(currentFile).ext === '.js'
+        ) {
+          fs.unlinkSync(path.resolve(`./pushkin-db/migrations/${currentFile}`));
         }
       });
       if (condition) {

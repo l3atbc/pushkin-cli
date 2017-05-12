@@ -2,6 +2,7 @@
 
 const program = require('commander');
 const chalk = require('chalk');
+const WorkerManager = require('../src/WorkerManager');
 const ControllerManager = require('../src/controllerManager');
 const ModelManager = require('../src/modelManager');
 
@@ -20,6 +21,11 @@ if (thing && name) {
     case 'model': {
       const modelManager = new ModelManager();
       modelManager.delete(name);
+      break;
+    }
+    case 'worker': {
+      const workerManager = new WorkerManager();
+      workerManager.delete(name);
       break;
     }
     default:

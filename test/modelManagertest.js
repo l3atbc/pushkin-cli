@@ -15,7 +15,8 @@ const mockFs = {
   writeFileSync: sinon.stub(),
   mkdirSync: sinon.stub(),
   existsSync: sinon.stub(),
-  unlink: sinon.stub()
+  unlink: sinon.stub(),
+  unlinkSync: sinon.stub()
 };
 const mockFse = {
   removeSync: sinon.stub()
@@ -35,7 +36,6 @@ const mockEnv = (model, migration, seed, modelText, migrationText) => {
     └── pushkin-db
         ├── migrations
         │   └── dog.js
-        |   - trials.js
         ├── models
         │   └── cat
         │       └── cat.js
