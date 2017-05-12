@@ -10,5 +10,6 @@ program.command(
 );
 program.command('delete [thing] [name]', 'delete a controller');
 program.command('list [thing]', 'show list of entities');
+program.command('scaffold [name]', 'Generate a brand new quiz');
 
 program.parse(process.argv);
