@@ -13,6 +13,7 @@ module.exports = class ScaffoldManager {
     try {
       this.workerManager.generate(name);
     } catch (e) {
+      this.workerManager.delete(name);
       console.error(e);
       console.log('Couldnt generate workers');
       return;
@@ -20,6 +21,7 @@ module.exports = class ScaffoldManager {
     try {
       this.modelManager.generate(name);
     } catch (error) {
+      this.modelManager.delete(name);
       console.error(error);
       console.log('Couldnt generate models');
       return;
@@ -27,6 +29,7 @@ module.exports = class ScaffoldManager {
     try {
       this.controllerManager.generate(name);
     } catch (error) {
+      this.controllerManager.delete(name);
       console.error(error);
       console.log('Couldnt generate models');
       return;
