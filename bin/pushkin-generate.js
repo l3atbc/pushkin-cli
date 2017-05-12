@@ -1,9 +1,6 @@
 #!/usr/bin/env node
-const fs = require('fs-extra');
-const path = require('path');
 const program = require('commander');
 const chalk = require('chalk');
-const moment = require('moment');
 const WorkerManager = require('../src/workerManager');
 const ControllerManager = require('../src/controllerManager');
 const ModelManager = require('../src/modelManager');
