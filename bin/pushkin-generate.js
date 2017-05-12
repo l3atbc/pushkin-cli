@@ -26,8 +26,8 @@ if (thing && name) {
       break;
     }
     case 'worker': {
-      var workerConstructor = new WorkerManager(name);
-      workerConstructor.generate();
+      var workerConstructor = new WorkerManager();
+      workerConstructor.generate(name);
       break;
     }
     default:
