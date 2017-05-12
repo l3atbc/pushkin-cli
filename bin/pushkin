@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-const fs = require('fs-extra');
-const path = require('path');
 var program = require('commander');
 
 program.command(
@@ -10,5 +8,9 @@ program.command(
 );
 program.command('delete [thing] [name]', 'delete a controller');
 program.command('list [thing]', 'show list of entities');
+program.command(
+  'seed [name]',
+  'please run node seeder.js [name] in pushkin-db docker'
+);
 
 program.parse(process.argv);

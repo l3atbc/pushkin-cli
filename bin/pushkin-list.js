@@ -10,14 +10,16 @@ program.parse(process.argv);
 const thing = program.args[0];
 if (thing) {
   switch (thing) {
-    case 'controller':
+    case 'controller': {
       const controllerManager = new ControllerManager();
       controllerManager.showList();
       break;
-    case 'model':
+    }
+    case 'model': {
       const modelManager = new ModelManager();
       modelManager.showList();
       break;
+    }
     default:
       console.log('please enter a command'); // eslint-disable-line no-console
   }
