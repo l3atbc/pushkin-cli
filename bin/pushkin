@@ -8,6 +8,7 @@ program.command(
 );
 program.command('delete [thing] [name]', 'delete a controller');
 program.command('list [thing]', 'show list of entities');
+program.command('scaffold [name]', 'Generate a brand new quiz');
 program.command(
   'seed [name]',
   'please run node seeder.js [name] in pushkin-db docker'
