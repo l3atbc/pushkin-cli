@@ -5,7 +5,11 @@ exports.up = function(knex) {
     table.string('imageUrl');
     table.string('displayText');
     table.boolean('correct');
-    table.integer('questionId').references('id').inTable('questions');
+    table
+      .integer('questionId')
+      .references('id')
+      .inTable('questions')
+      .onDelete('CASCADE');
   });
 };
 

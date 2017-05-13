@@ -3,7 +3,11 @@ exports.up = function(knex) {
     table.increments('id').primary();
     table.string('type');
     table.string('prompt');
-    table.integer('trialId').references('id').inTable('trials');
+    table
+      .integer('trialId')
+      .references('id')
+      .inTable('trials')
+      .onDelete('CASCADE');
   });
 };
 
