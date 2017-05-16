@@ -46,7 +46,8 @@ module.exports = (rpc, conn, dbWrite) => {
   router.get('/responses', (req, res, next) => {
     // const { user, choiceId, questionId } = req.body;
     var rpcInput = {
-      method: 'allResponses'
+      method: 'allResponses',
+      params: []
     };
     return rpc(conn, channelName, rpcInput)
       .then(data => {
@@ -86,7 +87,7 @@ module.exports = (rpc, conn, dbWrite) => {
           // this is going to the python worker so the payload is different
           var workerInput = {
             method: 'getQuestion',
-            payload: {
+            params: {
               userId: user.id,
               questionId,
               choiceId,
@@ -128,7 +129,8 @@ module.exports = (rpc, conn, dbWrite) => {
   // get all trials for a quiz
   router.get('/trials', (req, res, next) => {
     var rpcInput = {
-      method: 'allTrials'
+      method: 'allTrials',
+      params: []
     };
     return rpc(conn, channelName, rpcInput)
       .then(data => {
@@ -187,7 +189,8 @@ module.exports = (rpc, conn, dbWrite) => {
   // get all users for a quiz
   router.get('/users', (req, res, next) => {
     var rpcInput = {
-      method: 'allUsers'
+      method: 'allUsers',
+      params: []
     };
     const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
@@ -261,7 +264,8 @@ module.exports = (rpc, conn, dbWrite) => {
   // get all questions for a quiz
   router.get('/questions', (req, res, next) => {
     var rpcInput = {
-      method: 'allQuestions'
+      method: 'allQuestions',
+      params: []
     };
     const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
@@ -324,7 +328,8 @@ module.exports = (rpc, conn, dbWrite) => {
   // get all choices for a quiz
   router.get('/choices', (req, res, next) => {
     var rpcInput = {
-      method: 'allChoice'
+      method: 'allChoice',
+      params: []
     };
     const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
@@ -394,7 +399,8 @@ module.exports = (rpc, conn, dbWrite) => {
     }
     if (checkUser(user.name, user.pass)) {
       const rpcInput = {
-        method: 'getResponseCsv'
+        method: 'getResponseCsv',
+        params: []
       };
       const channelName = fileName + '_rpc_worker';
       return rpc(conn, channelName, rpcInput)
@@ -412,7 +418,8 @@ module.exports = (rpc, conn, dbWrite) => {
   // get all languages for a quiz if quiz has language table
   router.get('/languages', (req, res, next) => {
     var rpcInput = {
-      method: 'allLanguages'
+      method: 'allLanguages',
+      params: []
     };
     const channelName = fileName + '_rpc_worker';
     return rpc(conn, channelName, rpcInput)
@@ -437,7 +444,7 @@ module.exports = (rpc, conn, dbWrite) => {
   router.get('/results/:userId', (req, res, next) => {
     var workerInput = {
       method: 'getResults',
-      payload: {
+      params: {
         userId: req.params.userId
       }
     };
