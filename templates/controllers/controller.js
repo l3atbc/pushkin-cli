@@ -105,7 +105,7 @@ module.exports = (rpc, conn, dbWrite) => {
   router.put('/response/:id', (req, res, next) => {
     var rpcInput = {
       method: 'updateResponse',
-      params: [req.params.id]
+      params: [req.params.id, req.body]
     };
     return rpc(conn, channelName, rpcInput)
       .then(data => {
