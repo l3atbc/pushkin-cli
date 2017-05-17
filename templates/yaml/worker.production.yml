@@ -1,7 +1,4 @@
 image: pushkinl3/pushkin-worker:latest
-build:
-  context: ./pushkin-worker
-  dockerfile: Dockerfile
 volumes:
   - ./pushkin-worker:/usr/src/app
 command: bash start.sh
