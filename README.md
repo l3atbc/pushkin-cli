@@ -71,7 +71,7 @@ Due to the fact that the only way to fix the corrupted migration folder issue is
 - `/templates` : consists template files for controller, migrations, models and seeds
 - `/tests` : tests are written for all managers
 
-# Tests
+## Tests
 Tests are available for `Controllers`, `Controller Manager`, `Worker Manager` and `Model Managr`. You could add your own tests or modify existing test files by looking into the `pushkin-cli/test` folder. 
 
 To run the tests : `npm run test` or `npm run test--watch` in `pushkin-cli` folder.
