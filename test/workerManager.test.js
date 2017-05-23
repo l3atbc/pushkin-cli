@@ -142,10 +142,6 @@ describe('WorkerManager', () => {
       ).to.eql('bash start.debug.sh');
       expect(
         workerManager.dockerPaths.production.document.services['test-worker']
-          .build.context
-      ).to.eql('./test-worker');
-      expect(
-        workerManager.dockerPaths.production.document.services['test-worker']
           .environment
       ).to.eql(['AMPQ_ADDRESS=amqp://message-queue:5672', 'QUEUE=test']);
       expect(

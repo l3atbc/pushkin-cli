@@ -65,16 +65,19 @@ module.exports = class WorkerManager {
       worker.volumes[0] = `./${this.folderName}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
-      productionWorker = fs.readFileSync(productionWorker, 'utf-8');
-      productionWorker = yaml.safeLoad(productionWorker);
-      productionWorker.build.context = `./${this.name}-worker`;
-      productionWorker.volumes[0] = `./${this.folderName}:/usr/src/app`;
-      productionWorker.environment[1] = `QUEUE=${this.name}`;
-      this.productionWorker = productionWorker;
     } catch (e) {
       logger.error('Couldnt find the worker.yml', worker, e);
 
       throw new Error('couldnt find the worker.yml');
+    }
+    try {
+      productionWorker = fs.readFileSync(productionWorker, 'utf-8');
+      productionWorker = yaml.safeLoad(productionWorker);
+      productionWorker.environment[1] = `QUEUE=${this.name}`;
+      this.productionWorker = productionWorker;
+    } catch (e) {
+      logger.error('Couldnt find the production worker.yml', worker, e);
+      throw new Error('couldnt find the production worker.yml');
     }
   }
   createNewDocuments() {
