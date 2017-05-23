@@ -145,7 +145,7 @@ describe('WHICH English Controller', () => {
           });
           expect(mockRpc.secondCall.args[2]).to.eql({
             method: 'getQuestion',
-            payload: {
+            params: {
               userId: 1,
               questionId: 1,
               choiceId: 1,
@@ -195,7 +195,7 @@ describe('WHICH English Controller', () => {
           const connection = 'fake connection';
           const body = {
             method: 'getQuestion',
-            payload: {
+            params: {
               choice: { responses: ['response 1'] },
               userId: 42,
               questionId: 100,
@@ -214,7 +214,7 @@ describe('WHICH English Controller', () => {
           expect(mockRpc.secondCall.args[1]).to.equal('controller_task_queue');
           expect(mockRpc.secondCall.args[2]).to.eql({
             method: 'getQuestion',
-            payload: {
+            params: {
               userId: 42,
               questionId: 100,
               choiceId: 1112,
@@ -297,7 +297,8 @@ describe('WHICH English Controller', () => {
         expect(mockRpc.firstCall.args[0]).to.equal('fake connection');
         expect(mockRpc.firstCall.args[1]).to.equal('controller_rpc_worker');
         expect(mockRpc.firstCall.args[2]).to.eql({
-          method: 'allTrials'
+          method: 'allTrials',
+          params: []
         });
       });
     });
@@ -342,7 +343,8 @@ describe('WHICH English Controller', () => {
           expect(mockRpc.firstCall.args[0]).to.equal('fake connection');
           expect(mockRpc.firstCall.args[1]).to.equal('controller_rpc_worker');
           expect(mockRpc.firstCall.args[2]).to.eql({
-            method: 'getResponseCsv'
+            method: 'getResponseCsv',
+            params: []
           });
           done();
         });
@@ -397,7 +399,8 @@ describe('WHICH English Controller', () => {
         expect(mockRpc.firstCall.args[0]).to.equal('fake connection');
         expect(mockRpc.firstCall.args[1]).to.equal('controller_rpc_worker');
         expect(mockRpc.firstCall.args[2]).to.eql({
-          method: 'allLanguages'
+          method: 'allLanguages',
+          params: []
         });
       });
     });
@@ -446,7 +449,7 @@ describe('WHICH English Controller', () => {
           'controller_task_queue',
           {
             method: 'getResults',
-            payload: {
+            params: {
               userId: userId
             }
           }
