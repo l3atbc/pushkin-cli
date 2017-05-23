@@ -3,7 +3,10 @@
 ![Pushkin Logo](http://i.imgur.com/ncRJMJ5.png)
 
 ## Overview
-pushkin-cli tool is created to easily generate or delete a set of routes, migrations, bookshelf models, seeds and workers for a new quiz.
+The pushkin tool is created to easily generate or delete a set of routes, migrations, bookshelf models, seeds and workers for a new quiz.
+
+## Install
+npm install --global pushkin
 
 ## Get Started
 * CD into your pushkin project folder
@@ -30,7 +33,7 @@ pushkin-cli tool is created to easily generate or delete a set of routes, migrat
 ## How does it work
 The core of this cli tool are the manager files listed in `/src`. Each of them are responsible for three methods: `generate`, `delete` and `list`. 
 
-Upon the command `pushkin [action] A B` where action is one of the methods, A is the entity and B is the name desired, pushkin-cli simply calls the appropriate methods in the corresponding manager file. 
+Upon the command `pushkin [action] A B` where action is one of the methods, A is the entity and B is the name desired, pushkin simply calls the appropriate methods in the corresponding manager file. 
 
 For example, `pushkin generate controller whichenglish` calls controllerManager's generate method to create a brand new controller file by coping `controller.js` in `/templates/controllesr` for quiz `whichenglish`.
 
