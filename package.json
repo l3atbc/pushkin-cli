@@ -1,6 +1,6 @@
 {
   "name": "pushkin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "pushkin.js",
   "scripts": {
@@ -24,7 +24,9 @@
     "commander": "git+https://github.com/tj/commander.js.git",
     "fs-extra": "^3.0.1",
     "inquirer": "^3.0.6",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "js-yaml": "*",
+    "ncp": "*"
   },
   "bin": "bin/pushkin",
   "devDependencies": {

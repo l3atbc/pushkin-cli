@@ -1,6 +1,11 @@
+const path = require('path');
+
+const projConfig = require(path.resolve('./config'));
+const config = projConfig.getConfig();
+const proj = config.name;
+
 const fs = require('fs');
 const fse = require('fs-extra');
-const path = require('path');
 const logger = require('./logger');
 const moment = require('moment');
 const chalk = require('chalk');
@@ -16,7 +21,7 @@ class ModelManager {
    * @memberof ModelManager
    */
   showList() {
-    const models = fs.readdirSync(path.resolve('./pushkin-db/models'));
+    const models = fs.readdirSync(path.resolve(`./${proj}-db/models`));
     models.map(model => logger.log(path.parse(model).name));
   }
   /**
@@ -25,7 +30,7 @@ class ModelManager {
    * @memberof ModelManager
    */
   ensureDirectory() {
-    const isPushkin = fs.existsSync(path.resolve('./pushkin-db'));
+    const isPushkin = fs.existsSync(path.resolve(`./${proj}-db`));
     if (!isPushkin) {
       logger.error('Sorry couldnt find a pushkin-db folder');
       throw new Error('Not a pushkin project');
@@ -64,7 +69,7 @@ class ModelManager {
    * @returns {Boolean}
    */
   checkMigrationCollisions() {
-    const thingPath = path.resolve('./pushkin-db/migrations');
+    const thingPath = path.resolve(`./${proj}-db/migrations`);
     const existingMigrationFiles = fs.readdirSync(thingPath);
     return existingMigrationFiles.some(currentFile => {
       const nameArray = currentFile.split('_');
@@ -280,7 +285,7 @@ class ModelManager {
     const migrationExists = this.checkMigrationCollisions();
     if (migrationExists) {
       const migrations = fs.readdirSync(
-        path.resolve('./pushkin-db/migrations')
+        path.resolve(`./${proj}-db/migrations`)
       );
       const migrationFiles = migrations.filter(currentMigration => {
         const nameArray = currentMigration.split('_');

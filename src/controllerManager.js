@@ -1,9 +1,15 @@
-const fs = require('fs');
 const path = require('path');
+
+const projConfig = require(path.resolve('./config'));
+const config = projConfig.getConfig();
+const proj = config.name;
+
+const fs = require('fs');
 const logger = require('./logger');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const deleteQuestionPrompt = require('./inquirer');
+
 /**
  * @class ControllerManager
  */
@@ -14,7 +20,7 @@ class ControllerManager {
    * @memberof ControllerManager
    */
   showList() {
-    let controllers = fs.readdirSync(path.resolve('./pushkin-api/controllers'));
+    let controllers = fs.readdirSync(path.resolve(`./${proj}-api/controllers`));
     controllers.map(controller => logger.log(path.parse(controller).name));
   }
   /**
@@ -23,21 +29,21 @@ class ControllerManager {
    * @memberof ControllerManager
    */
   ensureDirectory() {
-    const isPushkin = fs.existsSync(path.resolve('./pushkin-api'));
+    const isPushkin = fs.existsSync(path.resolve(`./${proj}-api`));
     if (!isPushkin) {
       logger.error('Sorry couldnt find a pushkin-api folder');
       throw new Error('Not a pushkin project');
     }
   }
   /**
-   * returns if a controller already exist in `/pushkin-api/controllers`
+   * returns if a controller already exist in `./${proj}-api/controllers`
    * @method ControllerManager#checkExistence
    * @memberof ControllerManager
    * @param {String} name - name of controller to check
    * @returns {Boolean}
    */
   checkExistence(name) {
-    const controllerPath = path.resolve(`./pushkin-api/controllers`);
+    const controllerPath = path.resolve(`./${proj}-api/controllers`);
     const to = fs.readdirSync(controllerPath);
     if (!to) {
       logger.error('Couldnt finda controllers folder tried,', controllerPath);
@@ -68,7 +74,7 @@ class ControllerManager {
    */
   copyTemplate(name) {
     fs.writeFileSync(
-      path.resolve(`./pushkin-api/controllers/${name}.js`),
+      path.resolve(`./${proj}-api/controllers/${name}.js`),
       this.templateData
     );
   }
@@ -105,7 +111,7 @@ class ControllerManager {
         const isExists = this.checkExistence(name);
         if (isExists) {
           const targetFile = path.resolve(
-            `./pushkin-api/controllers/${name}.js`
+            `./${proj}-api/controllers/${name}.js`
           );
           fs.unlink(targetFile, err => {
             if (err) {
