@@ -44,7 +44,7 @@ class ModelManager {
    * @returns an error message if type folder doesnt exist
    */
   checkExistence(type) {
-    const thingPath = path.resolve(`./pushkin-db/${type}`);
+    const thingPath = path.resolve(`./${proj}-db/${type}`);
     const to = fs.readdirSync(thingPath);
     if (!to) {
       logger.error(`Couldnt finda ${type} folder tried,`, thingPath);
@@ -59,7 +59,7 @@ class ModelManager {
    * @returns {Boolean}
    */
   checkCollisions(type) {
-    const thingPath = path.resolve(`./pushkin-db/${type}/${this.name}`);
+    const thingPath = path.resolve(`./${proj}-db/${type}/${this.name}`);
     return fs.existsSync(thingPath);
   }
   /**
@@ -108,17 +108,17 @@ class ModelManager {
   }
   formatWritePath(type, currentFileName, index) {
     const migrationPath = path.resolve(
-      `./pushkin-db/migrations/${moment()
+      `./${proj}-db/migrations/${moment()
         .add(index, 'second')
         .format(
           'YYYYMMDDHHmmss'
         )}_create_${this.name}_${currentFileName.replace(/\d_/, '')}`
     );
     const modelPath = path.resolve(
-      `./pushkin-db/models/${this.name}/${currentFileName}`
+      `./${proj}-db/models/${this.name}/${currentFileName}`
     );
     const seedPath = path.resolve(
-      `./pushkin-db/seeds/${this.name}/${currentFileName}`
+      `./${proj}-db/seeds/${this.name}/${currentFileName}`
     );
     switch (type) {
       case 'migrations':
@@ -178,7 +178,7 @@ class ModelManager {
     this.loadTemplateThenWrite('migrations');
   }
   makeDirectory(type) {
-    return fs.mkdirSync(`./pushkin-db/${type}/${this.name}`);
+    return fs.mkdirSync(`./${proj}-db/${type}/${this.name}`);
   }
   makeSeedDirectory() {
     this.makeDirectory('seeds');
@@ -246,7 +246,7 @@ class ModelManager {
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('seeds');
     if (isExists) {
-      const folderPath = path.resolve(`./pushkin-db/seeds/${this.name}`);
+      const folderPath = path.resolve(`./${proj}-db/seeds/${this.name}`);
       fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} seeds`);
@@ -265,7 +265,7 @@ class ModelManager {
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('models');
     if (isExists) {
-      const folderPath = path.resolve(`./pushkin-db/models/${this.name}`);
+      const folderPath = path.resolve(`./${proj}-db/models/${this.name}`);
       fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} models`);
@@ -296,7 +296,7 @@ class ModelManager {
           currentFile !== '.DS_Store' &&
           path.parse(currentFile).ext === '.js'
         ) {
-          fs.unlinkSync(path.resolve(`./pushkin-db/migrations/${currentFile}`));
+          fs.unlinkSync(path.resolve(`./${proj}-db/migrations/${currentFile}`));
         }
       });
       if (condition) {
