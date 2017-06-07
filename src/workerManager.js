@@ -105,7 +105,7 @@ module.exports = class WorkerManager {
     );
   }
   copyFolder() {
-    const workerPath = path.resolve(__dirname, '../templates/worker');
+    const workerPath = path.resolve(__dirname, '../templates/python-worker');
     ncp(workerPath, this.folderName, err => {
       if (err) {
         this.handleError(err);
