@@ -1,6 +1,6 @@
 ![Pushkin Logo](http://i.imgur.com/ncRJMJ5.png)
 
-# Pushkin Worker
+# Python Worker
 
 # Overview
 * python worker for data analysis
