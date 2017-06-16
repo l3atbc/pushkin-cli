@@ -54,9 +54,9 @@ module.exports = class WorkerManager {
     return this.dockerPaths[type].path;
   }
   createWorker() {
-    var worker = this.getCliPath('../templates/yaml/worker.yml');
+    var worker = this.getCliPath('../templates/python-worker/worker.yml');
     var productionWorker = this.getCliPath(
-      '../templates/yaml/worker.production.yml'
+      '../templates/python-worker/worker.production.yml'
     );
     try {
       worker = fs.readFileSync(worker, 'utf-8');
