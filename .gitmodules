@@ -1,3 +1,0 @@
-[submodule "templates/python-worker"]
-	path = templates/python-worker
-url=https://github.com/pushkin-npm/python-worker.git
