@@ -14,7 +14,7 @@ module.exports = class WorkerManager {
   }
   generate(name) {
     this.name = name;
-    this.folderName = `${name}-worker`;
+    this.folderName = `${name}`;
     this.createWorker();
     this.createNewDocuments();
     this.writeDocuments();
@@ -61,14 +61,15 @@ module.exports = class WorkerManager {
     try {
       worker = fs.readFileSync(worker, 'utf-8');
       worker = yaml.safeLoad(worker);
-      worker.build.context = `./${this.name}-worker`;
+      worker.image = `DOCKERHUB_ID/${this.name}:latest`;
+      worker.build.context = `./exp-workers/${this.name}`;
       worker.volumes[0] = `./${this.folderName}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
     } catch (e) {
       logger.error('Couldnt find the worker.yml', worker, e);
 
-      throw new Error('couldnt find the worker.yml');
+      throw new Error('Couldnt find the worker.yml');
     }
     try {
       productionWorker = fs.readFileSync(productionWorker, 'utf-8');
@@ -136,13 +137,13 @@ module.exports = class WorkerManager {
         ])
         .then(response => {
           if (response.delete === true) {
-            return fse.remove(path.resolve(`./${name}-worker`));
+            return fse.remove(path.resolve(`./exp-workers/${name}`));
           }
         })
         .then(() => {
           Object.keys(this.dockerPaths).map(key => {
             this.dockerPaths[key].document = this.dockerPaths[key].original;
-            delete this.dockerPaths[key].document.services[`${name}-worker`];
+            delete this.dockerPaths[key].document.services[`${name}`];
           });
           return this.writeDocuments();
         });
