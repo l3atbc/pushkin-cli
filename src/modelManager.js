@@ -21,7 +21,7 @@ class ModelManager {
    * @memberof ModelManager
    */
   showList() {
-    const models = fs.readdirSync(path.resolve(`./${proj}-db/models`));
+    const models = fs.readdirSync(path.resolve(`./db-worker/models`));
     models.map(model => logger.log(path.parse(model).name));
   }
   /**
@@ -30,7 +30,7 @@ class ModelManager {
    * @memberof ModelManager
    */
   ensureDirectory() {
-    const isPushkin = fs.existsSync(path.resolve(`./${proj}-db`));
+    const isPushkin = fs.existsSync(path.resolve(`./db-worker`));
     if (!isPushkin) {
       logger.error('Sorry couldnt find a pushkin-db folder');
       throw new Error('Not a pushkin project');
@@ -44,7 +44,7 @@ class ModelManager {
    * @returns an error message if type folder doesnt exist
    */
   checkExistence(type) {
-    const thingPath = path.resolve(`./${proj}-db/${type}`);
+    const thingPath = path.resolve(`./db-worker/${type}`);
     const to = fs.readdirSync(thingPath);
     if (!to) {
       logger.error(`Couldnt finda ${type} folder tried,`, thingPath);
@@ -59,7 +59,7 @@ class ModelManager {
    * @returns {Boolean}
    */
   checkCollisions(type) {
-    const thingPath = path.resolve(`./${proj}-db/${type}/${this.name}`);
+    const thingPath = path.resolve(`./db-worker/${type}/${this.name}`);
     return fs.existsSync(thingPath);
   }
   /**
@@ -69,7 +69,7 @@ class ModelManager {
    * @returns {Boolean}
    */
   checkMigrationCollisions() {
-    const thingPath = path.resolve(`./${proj}-db/migrations`);
+    const thingPath = path.resolve(`./db-worker/migrations`);
     const existingMigrationFiles = fs.readdirSync(thingPath);
     return existingMigrationFiles.some(currentFile => {
       const nameArray = currentFile.split('_');
@@ -108,17 +108,17 @@ class ModelManager {
   }
   formatWritePath(type, currentFileName, index) {
     const migrationPath = path.resolve(
-      `./${proj}-db/migrations/${moment()
+      `./db-worker/migrations/${moment()
         .add(index, 'second')
         .format(
           'YYYYMMDDHHmmss'
         )}_create_${this.name}_${currentFileName.replace(/\d_/, '')}`
     );
     const modelPath = path.resolve(
-      `./${proj}-db/models/${this.name}/${currentFileName}`
+      `./db-worker/models/${this.name}/${currentFileName}`
     );
     const seedPath = path.resolve(
-      `./${proj}-db/seeds/${this.name}/${currentFileName}`
+      `./db-worker/seeds/${this.name}/${currentFileName}`
     );
     switch (type) {
       case 'migrations':
@@ -178,7 +178,7 @@ class ModelManager {
     this.loadTemplateThenWrite('migrations');
   }
   makeDirectory(type) {
-    return fs.mkdirSync(`./${proj}-db/${type}/${this.name}`);
+    return fs.mkdirSync(`./db-worker/${type}/${this.name}`);
   }
   makeSeedDirectory() {
     this.makeDirectory('seeds');
@@ -246,7 +246,7 @@ class ModelManager {
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('seeds');
     if (isExists) {
-      const folderPath = path.resolve(`./${proj}-db/seeds/${this.name}`);
+      const folderPath = path.resolve(`./db-worker/seeds/${this.name}`);
       fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} seeds`);
@@ -265,7 +265,7 @@ class ModelManager {
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('models');
     if (isExists) {
-      const folderPath = path.resolve(`./${proj}-db/models/${this.name}`);
+      const folderPath = path.resolve(`./db-worker/models/${this.name}`);
       fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} models`);
@@ -285,7 +285,7 @@ class ModelManager {
     const migrationExists = this.checkMigrationCollisions();
     if (migrationExists) {
       const migrations = fs.readdirSync(
-        path.resolve(`./${proj}-db/migrations`)
+        path.resolve(`./db-worker/migrations`)
       );
       const migrationFiles = migrations.filter(currentMigration => {
         const nameArray = currentMigration.split('_');
@@ -296,7 +296,7 @@ class ModelManager {
           currentFile !== '.DS_Store' &&
           path.parse(currentFile).ext === '.js'
         ) {
-          fs.unlinkSync(path.resolve(`./${proj}-db/migrations/${currentFile}`));
+          fs.unlinkSync(path.resolve(`./db-worker/migrations/${currentFile}`));
         }
       });
       if (condition) {

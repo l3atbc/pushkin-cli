@@ -62,7 +62,7 @@ module.exports = class WorkerManager {
       worker = fs.readFileSync(worker, 'utf-8');
       worker = yaml.safeLoad(worker);
       worker.image = `DOCKERHUB_ID/${this.name}:latest`;
-      worker.build.context = `./exp-workers/${this.name}`;
+      worker.build.context = `./workers/${this.name}`;
       worker.volumes[0] = `./${this.folderName}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
@@ -137,7 +137,7 @@ module.exports = class WorkerManager {
         ])
         .then(response => {
           if (response.delete === true) {
-            return fse.remove(path.resolve(`./exp-workers/${name}`));
+            return fse.remove(path.resolve(`./workers/${name}`));
           }
         })
         .then(() => {
