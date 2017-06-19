@@ -1,14 +1,14 @@
-image: DOCKERHUB_ID/pushkin-worker:latest
+image:
 build:
-  context: ./python-worker
+  context:
   dockerfile: Dockerfile
 volumes:
-  - ./python-worker:/usr/src/app
+  -
 command: bash start.debug.sh
 depends_on:
   - "message-queue"
 environment:
   - AMPQ_ADDRESS=amqp://message-queue:5672
-  - QUEUE=verbcorner
+  -
 links:
   - message-queue

@@ -14,7 +14,7 @@ module.exports = class WorkerManager {
   }
   generate(name) {
     this.name = name;
-    this.folderName = `${name}`;
+    this.folderName = `./workers/${name}`;
     this.createWorker();
     this.createNewDocuments();
     this.writeDocuments();
@@ -63,7 +63,7 @@ module.exports = class WorkerManager {
       worker = yaml.safeLoad(worker);
       worker.image = `DOCKERHUB_ID/${this.name}:latest`;
       worker.build.context = `./workers/${this.name}`;
-      worker.volumes[0] = `./${this.folderName}:/usr/src/app`;
+      worker.volumes[0] = `${this.folderName}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
     } catch (e) {
@@ -84,10 +84,10 @@ module.exports = class WorkerManager {
   createNewDocuments() {
     this.dockerPaths.production.document = this.dockerPaths.production.original;
     this.dockerPaths.production.document.services[
-      this.folderName
+      this.name
     ] = this.productionWorker;
     this.dockerPaths.debug.document = this.dockerPaths.debug.original;
-    this.dockerPaths.debug.document.services[this.folderName] = this.worker;
+    this.dockerPaths.debug.document.services[this.name] = this.worker;
   }
   writeDocuments() {
     let document = this.dockerPaths.debug.document;
@@ -122,7 +122,7 @@ module.exports = class WorkerManager {
     logger.error(error);
   }
   delete(name) {
-    const directoryContents = fs.readdirSync(path.resolve('./'));
+    const directoryContents = fs.readdirSync(path.resolve('./workers'));
     const isExists = directoryContents.some(folder =>
       path.parse(folder).name.includes(name)
     );
