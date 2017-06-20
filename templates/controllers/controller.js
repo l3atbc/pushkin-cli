@@ -56,7 +56,7 @@ module.exports = (rpc, conn, dbWrite) => {
       .catch(next);
   });
   // get one response with an id
-  router.get('./responses/:id', (req, res, next) => {
+  router.get('/responses/:id', (req, res, next) => {
     var rpcInput = {
       method: 'findResponse',
       params: [req.params.id]
