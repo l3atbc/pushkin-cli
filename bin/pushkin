@@ -6,6 +6,7 @@ program.command(
   'generate [thing] [name]',
   'generate a new controller, model, or worker'
 );
+program.command('sync', 'sync experiment files');
 program.command('delete [thing] [name]', 'delete a controller');
 program.command('list [thing]', 'show list of entities');
 program.command('scaffold [name]', 'Generate a brand new quiz');

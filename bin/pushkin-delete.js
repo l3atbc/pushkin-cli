@@ -2,7 +2,7 @@
 
 const program = require('commander');
 const chalk = require('chalk');
-const WorkerManager = require('../src/WorkerManager');
+const WorkerManager = require('../src/workerManager');
 const ControllerManager = require('../src/controllerManager');
 const ModelManager = require('../src/modelManager');
 

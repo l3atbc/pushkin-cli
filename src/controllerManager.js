@@ -1,9 +1,4 @@
 const path = require('path');
-
-const projConfig = require(path.resolve('./config'));
-const config = projConfig.getConfig();
-const proj = config.name;
-
 const fs = require('fs');
 const logger = require('./logger');
 const inquirer = require('inquirer');
