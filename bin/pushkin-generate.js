@@ -4,7 +4,7 @@ const program = require('commander');
 const chalk = require('chalk');
 const WorkerManager = require('../src/workerManager');
 const ControllerManager = require('../src/controllerManager');
-const DbItemManager = require('../src/dbItemsManager');
+const DbItemsManager = require('../src/dbItemsManager');
 
 program.parse(process.argv);
 

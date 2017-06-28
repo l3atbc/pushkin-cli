@@ -27,7 +27,7 @@ class SyncManager {
 
   copy() {
     fs.readdirSync(path.resolve('./experiments')).forEach(exp => {
-      if (exp !== '.DS_Store' ) {
+      if (!exp.includes('.')) {
         fse.copySync(path.resolve(`./experiments/${exp}/models`), path.resolve(`./db-worker/models/${exp}`));
         fse.copySync(path.resolve(`./experiments/${exp}/seeds`), path.resolve(`./db-worker/seeds/${exp}`));
         fse.copySync(path.resolve(`./experiments/${exp}/worker`), path.resolve(`./workers/${exp}`));

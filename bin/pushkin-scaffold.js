@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const program = require('commander');
+const chalk = require('chalk');
 program.parse(process.argv);
 const ScaffoldManager = require('../src/scaffoldManager');
 

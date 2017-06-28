@@ -55,7 +55,17 @@ class dbItemsManager {
    */
   checkCollisions(type) {
     const thingPath = path.resolve(`./experiments/${this.name}/${type}`);
-    return fs.existsSync(thingPath);
+    const contents = fs.readdirSync(thingPath);
+    const index = contents.indexOf('.DS_Store');
+    if (index > -1) {
+      contents.splice(index, 1);
+    }
+    if (contents.length == 0) {
+      return false;
+    }
+    else {
+      return true;
+    }
   }
   /**
    * returns if migrations for modelWantToCreate already exist in `/pushkin-api/migrations/${modelWantToCreate}`
@@ -71,13 +81,13 @@ class dbItemsManager {
       return nameArray.indexOf(this.name) > -1;
     });
   }
-  checkMigrationDirectoryExists() {
+  checkMigrationsDirectoryExists() {
     this.checkExistence('migrations');
   }
-  checkModelDirectoryExists() {
+  checkModelsDirectoryExists() {
     this.checkExistence('models');
   }
-  checkSeedDirectoryExists() {
+  checkSeedsDirectoryExists() {
     this.checkExistence('seeds');
   }
   /**
@@ -172,22 +182,13 @@ class dbItemsManager {
   loadMigrationTemplate() {
     this.loadTemplateThenWrite('migrations');
   }
-  makeDirectory(type) {
-    return fs.mkdirSync(`./experiments/${this.name}/${type}`);
-  }
-  makeSeedDirectory() {
-    this.makeDirectory('seeds');
-  }
-  makeModelDirectory() {
-    this.makeDirectory('models');
-  }
   /**
    * creates new migrations for modelsWantToCreate
    * @method DbItemsManager#generateMigrations
    * @memberof DbItemsManager
    */
   generateMigrations() {
-    this.checkMigrationDirectoryExists();
+    this.checkMigrationsDirectoryExists();
     const isExists = this.checkMigrationCollisions();
     if (!isExists) {
       this.loadMigrationTemplate();
@@ -203,10 +204,9 @@ class dbItemsManager {
    * @memberof DbItemsManager
    */
   generateModels() {
-    this.checkModelDirectoryExists();
+    this.checkModelsDirectoryExists();
     const isExists = this.checkCollisions('models');
     if (!isExists) {
-      this.makeModelDirectory();
       this.loadModelTemplate();
     } else {
       logger.log(chalk.red(`Sorry ${this.name} models already exist`));
@@ -220,10 +220,9 @@ class dbItemsManager {
    * @memberof DbItemsManager
    */
   generateSeeds() {
-    this.checkSeedDirectoryExists();
+    this.checkSeedsDirectoryExists();
     const isExists = this.checkCollisions('seeds');
     if (!isExists) {
-      this.makeSeedDirectory();
       this.loadSeedTemplate();
     } else {
       logger.log(chalk.red(`Sorry ${this.name} seeds already exist`));
@@ -238,9 +237,7 @@ class dbItemsManager {
    * @memberof DbItemsManager
    */
   deleteSeeds(condition) {
-    this.checkSeedDirectoryExists();
-    const isExists = this.checkCollisions('seeds');
-    if (isExists) {
+    if (fs.existsSync(path.resolve(`./experiments/${this.name}/seeds`))) {
       const folderPath = path.resolve(`./experiments/${this.name}/seeds`);
       fse.removeSync(folderPath);
       if (condition) {
@@ -257,9 +254,7 @@ class dbItemsManager {
    * @memberof DbItemsManager
    */
   deleteModels(condition) {
-    this.checkSeedDirectoryExists();
-    const isExists = this.checkCollisions('models');
-    if (isExists) {
+    if (fs.existsSync(path.resolve(`./experiments/${this.name}/models`))) {
       const folderPath = path.resolve(`./experiments/${this.name}/models`);
       fse.removeSync(folderPath);
       if (condition) {
@@ -276,24 +271,9 @@ class dbItemsManager {
    * @memberof DbItemsManager
    */
   deleteMigrations(condition) {
-    this.checkModelDirectoryExists();
-    const migrationExists = this.checkMigrationCollisions();
-    if (migrationExists) {
-      const migrations = fs.readdirSync(
-        path.resolve(`./experiments/${this.name}/migrations`)
-      );
-      const migrationFiles = migrations.filter(currentMigration => {
-        const nameArray = currentMigration.split('_');
-        return nameArray.indexOf(this.name) > -1;
-      });
-      migrationFiles.forEach(currentFile => {
-        if (
-          currentFile !== '.DS_Store' &&
-          path.parse(currentFile).ext === '.js'
-        ) {
-          fs.unlinkSync(path.resolve(`./experiments/${this.name}/migrations/${currentFile}`));
-        }
-      });
+    if (fs.existsSync(path.resolve(`./experiments/${this.name}/migrations`))) {
+      const folderPath = path.resolve(`./experiments/${this.name}/migrations`);
+      fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} migrations`);
       } else {
@@ -315,7 +295,7 @@ class dbItemsManager {
         this.deleteMigrations();
         this.deleteModels();
         this.deleteSeeds();
-        return logger.log(chalk.blue('model deleted'));
+        return logger.log(chalk.blue('dbItems deleted'));
       }
       process.exit(1);
     });
@@ -334,6 +314,9 @@ class dbItemsManager {
     this.generateMigrations();
   }
   checkMigrationsConflict(name) {
+    if (!fs.existsSync(path.resolve(`./experiments/${name}/migrations`))) {
+      return false
+    }
     const thingPath = path.resolve(`./experiments/${name}/migrations`);
     const existingMigrationFiles = fs.readdirSync(thingPath);
     return existingMigrationFiles.some(currentFile => {

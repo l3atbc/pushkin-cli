@@ -70,7 +70,7 @@ module.exports = class WorkerManager {
       worker = yaml.safeLoad(worker);
       worker.image = `DOCKERHUB_ID/${this.name}:latest`;
       worker.build.context = `./workers/${this.name}`;
-      worker.volumes[0] = `./workers/${name}:/usr/src/app`;
+      worker.volumes[0] = `./workers/${this.name}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
     } catch (e) {
@@ -115,7 +115,7 @@ module.exports = class WorkerManager {
   }
   copyFolder() {
     const workerPath = path.resolve(__dirname, '../templates/python-worker');
-    ncp(workerPath, `./experiments/${name}/worker`, err => {
+    ncp(workerPath, `./experiments/${this.name}/worker`, err => {
       if (err) {
         this.handleError(err);
         // return process.exit(1)
@@ -127,11 +127,7 @@ module.exports = class WorkerManager {
     logger.error(error);
   }
   delete(name) {
-    const directoryContents = fs.readdirSync(path.resolve('./workers'));
-    const isExists = directoryContents.some(folder =>
-      path.parse(folder).name.includes(name)
-    );
-    if (isExists) {
+    if (fs.existsSync(path.resolve(`./experiments/${name}/worker`))) {
       return inquirer
         .prompt([
           {
@@ -142,7 +138,7 @@ module.exports = class WorkerManager {
         ])
         .then(response => {
           if (response.delete === true) {
-            return fse.remove(path.resolve(`./workers/${name}`));
+            return fse.remove(path.resolve(`./experiments/${name}/worker`));
           }
         })
         .then(() => {

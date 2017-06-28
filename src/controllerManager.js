@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const fse = require('fs-extra');
 const logger = require('./logger');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
@@ -115,12 +116,11 @@ class ControllerManager {
     inquirer.prompt(deleteQuestionPrompt(name, 'controller')).then(answer => {
       if (answer.confirmation) {
         this.ensureDirectory();
-        const isExists = this.checkExistence(name);
-        if (isExists) {
+        if (fs.existsSync(path.resolve(`./experiments/${name}/controller`))) {
           const targetFile = path.resolve(
-            `./experiments/${name}/controller/${name}.js`
+            `./experiments/${name}/controller`
           );
-          fs.unlink(targetFile, err => {
+          fse.remove(targetFile, err => {
             if (err) {
               return logger.log(
                 `Sorry there was an error removing the controller ${name}`,
