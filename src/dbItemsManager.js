@@ -7,64 +7,64 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const deleteQuestionPrompt = require('./inquirer');
 /**
- * @class ModelManager
+ * @class DbItemsManager
  */
-class ModelManager {
+class dbItemsManager {
   /**
    * logs a list of existing models
-   * @method ModelManager#showList
-   * @memberof ModelManager
+   * @method DbItemsManager#showList
+   * @memberof DbItemsManager
    */
   showList() {
-    const models = fs.readdirSync(path.resolve(`./db-worker/models`));
+    let models = [];
+    fs.readdirSync(path.resolve('./experiments')).forEach(exp => {
+      if (exp !== '.DS_Store' ) {
+        models.concat(fs.readdirSync(path.resolve(`./experiments/${exp}/models`)));
+      }
+    });
     models.map(model => logger.log(path.parse(model).name));
   }
   /**
    * logs an error if methods did not run in a pushkin folder
-   * @method ModelManager#ensureDirectory
-   * @memberof ModelManager
+   * @method DbItemsManager#ensureDirectory
+   * @memberof DbItemsManager
    */
   ensureDirectory() {
-    const isPushkin = fs.existsSync(path.resolve(`./db-worker`));
+    const isPushkin = fs.existsSync(path.resolve(`./experiments`));
     if (!isPushkin) {
-      logger.error('Sorry couldnt find a pushkin-db folder');
+      logger.error('Sorry couldn\'t find an experiments folder');
       throw new Error('Not a pushkin project');
     }
   }
   /**
    * check if migrations/models/seeds folder already exist in `/pushkin-api`
-   * @method ModelManager#checkExistence
-   * @memberof ModelManager
+   * @method DbItemsManager#checkExistence
+   * @memberof DbItemsManager
    * @param {String} type - 'migrations'|'seeds'|'models'
    * @returns an error message if type folder doesnt exist
    */
   checkExistence(type) {
-    const thingPath = path.resolve(`./db-worker/${type}`);
-    const to = fs.readdirSync(thingPath);
-    if (!to) {
-      logger.error(`Couldnt finda ${type} folder tried,`, thingPath);
-      throw new Error(`Couldnt find a ${type} foler`);
-    }
+    fse.ensureDirSync(path.resolve(`./experiments/${this.name}/${type}`))
   }
   /**
    * returns if a modelWantToCreate already exist in `/pushkin-api/${type}/${modelWantToCreate}`
-   * @method ModelManager#checkCollisions
-   * @memberof ModelManager
+   * @method DbItemsManager#checkCollisions
+   * @memberof DbItemsManager
    * @param {String} type - 'migrations'|'seeds'|'models'
    * @returns {Boolean}
    */
   checkCollisions(type) {
-    const thingPath = path.resolve(`./db-worker/${type}/${this.name}`);
+    const thingPath = path.resolve(`./experiments/${this.name}/${type}`);
     return fs.existsSync(thingPath);
   }
   /**
    * returns if migrations for modelWantToCreate already exist in `/pushkin-api/migrations/${modelWantToCreate}`
-   * @method ModelManager#checkCollisions
-   * @memberof ModelManager
+   * @method DbItemsManager#checkCollisions
+   * @memberof DbItemsManager
    * @returns {Boolean}
    */
   checkMigrationCollisions() {
-    const thingPath = path.resolve(`./db-worker/migrations`);
+    const thingPath = path.resolve(`./experiments/${this.name}/migrations`);
     const existingMigrationFiles = fs.readdirSync(thingPath);
     return existingMigrationFiles.some(currentFile => {
       const nameArray = currentFile.split('_');
@@ -82,8 +82,8 @@ class ModelManager {
   }
   /**
    * returns template directory for migrations/models/seeds
-   * @method ModelManager#readTemplateDir
-   * @memberof ModelManager
+   * @method DbItemsManager#readTemplateDir
+   * @memberof DbItemsManager
    * @param {String} type - 'migrations'|'models'|'seeds'
    * @returns an array of file names
    */
@@ -103,17 +103,17 @@ class ModelManager {
   }
   formatWritePath(type, currentFileName, index) {
     const migrationPath = path.resolve(
-      `./db-worker/migrations/${moment()
+      `./experiments/${this.name}/migrations/${moment()
         .add(index, 'second')
         .format(
           'YYYYMMDDHHmmss'
         )}_create_${this.name}_${currentFileName.replace(/\d_/, '')}`
     );
     const modelPath = path.resolve(
-      `./db-worker/models/${this.name}/${currentFileName}`
+      `./experiments/${this.name}/models/${currentFileName}`
     );
     const seedPath = path.resolve(
-      `./db-worker/seeds/${this.name}/${currentFileName}`
+      `./experiments/${this.name}/seeds/${currentFileName}`
     );
     switch (type) {
       case 'migrations':
@@ -128,8 +128,8 @@ class ModelManager {
   }
   /**
    * reads file in migrations/bookshelf models/seeds template folder and writes to the corresponding pushkin-db folder
-   * @method ModelManager#loadTemplateThenWrite
-   * @memberof ModelManager
+   * @method DbItemsManager#loadTemplateThenWrite
+   * @memberof DbItemsManager
    * @param {String} type - 'migrations'|'seeds'|'models'
    */
   loadTemplateThenWrite(type) {
@@ -159,7 +159,7 @@ class ModelManager {
           result
         );
       } else {
-        throw new Error('couldnt find templateData, tried' + templateDataPath);
+        throw new Error('couldn\'t find templateData, tried' + templateDataPath);
       }
     });
   }
@@ -173,7 +173,7 @@ class ModelManager {
     this.loadTemplateThenWrite('migrations');
   }
   makeDirectory(type) {
-    return fs.mkdirSync(`./db-worker/${type}/${this.name}`);
+    return fs.mkdirSync(`./experiments/${this.name}/${type}`);
   }
   makeSeedDirectory() {
     this.makeDirectory('seeds');
@@ -183,8 +183,8 @@ class ModelManager {
   }
   /**
    * creates new migrations for modelsWantToCreate
-   * @method ModelManager#generateMigrations
-   * @memberof ModelManager
+   * @method DbItemsManager#generateMigrations
+   * @memberof DbItemsManager
    */
   generateMigrations() {
     this.checkMigrationDirectoryExists();
@@ -199,8 +199,8 @@ class ModelManager {
   }
   /**
    * creates new bookshelf models for modelsWantToCreate
-   * @method ModelManager#generateModels
-   * @memberof ModelManager
+   * @method DbItemsManager#generateModels
+   * @memberof DbItemsManager
    */
   generateModels() {
     this.checkModelDirectoryExists();
@@ -216,8 +216,8 @@ class ModelManager {
   }
   /**
    * creates new seed files for modelsWantToCreate
-   * @method ModelManager#generateSeeds
-   * @memberof ModelManager
+   * @method DbItemsManager#generateSeeds
+   * @memberof DbItemsManager
    */
   generateSeeds() {
     this.checkSeedDirectoryExists();
@@ -233,15 +233,15 @@ class ModelManager {
   }
   /**
    * delete existing seeds for model
-   * @method ModelManager#deleteSeeds
+   * @method DbItemsManager#deleteSeeds
    * @param {String} condition - optional param
-   * @memberof ModelManager
+   * @memberof DbItemsManager
    */
   deleteSeeds(condition) {
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('seeds');
     if (isExists) {
-      const folderPath = path.resolve(`./db-worker/seeds/${this.name}`);
+      const folderPath = path.resolve(`./experiments/${this.name}/seeds`);
       fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} seeds`);
@@ -252,15 +252,15 @@ class ModelManager {
   }
   /**
    * delete existing bookshelf models for model
-   * @method ModelManager#deleteModels
+   * @method DbItemsManager#deleteModels
    * @param {String} condition - optional param
-   * @memberof ModelManager
+   * @memberof DbItemsManager
    */
   deleteModels(condition) {
     this.checkSeedDirectoryExists();
     const isExists = this.checkCollisions('models');
     if (isExists) {
-      const folderPath = path.resolve(`./db-worker/models/${this.name}`);
+      const folderPath = path.resolve(`./experiments/${this.name}/models`);
       fse.removeSync(folderPath);
       if (condition) {
         logger.log(`rolled back ${this.name} models`);
@@ -271,16 +271,16 @@ class ModelManager {
   }
   /**
    * delete existing migrations for model
-   * @method ModelManager#deleteMigrations
+   * @method DbItemsManager#deleteMigrations
    * @param {String} condition - optional param
-   * @memberof ModelManager
+   * @memberof DbItemsManager
    */
   deleteMigrations(condition) {
     this.checkModelDirectoryExists();
     const migrationExists = this.checkMigrationCollisions();
     if (migrationExists) {
       const migrations = fs.readdirSync(
-        path.resolve(`./db-worker/migrations`)
+        path.resolve(`./experiments/${this.name}/migrations`)
       );
       const migrationFiles = migrations.filter(currentMigration => {
         const nameArray = currentMigration.split('_');
@@ -291,7 +291,7 @@ class ModelManager {
           currentFile !== '.DS_Store' &&
           path.parse(currentFile).ext === '.js'
         ) {
-          fs.unlinkSync(path.resolve(`./db-worker/migrations/${currentFile}`));
+          fs.unlinkSync(path.resolve(`./experiments/${this.name}/migrations/${currentFile}`));
         }
       });
       if (condition) {
@@ -303,9 +303,9 @@ class ModelManager {
   }
   /**
    * delete existing migrations, models, and seeds for a model with specified name
-   * @method ModelManager#delete
+   * @method DbItemsManager#delete
    * @param {String} name - name of model to delete
-   * @memberof ModelManager
+   * @memberof DbItemsManager
    */
   delete(name) {
     this.name = name;
@@ -324,15 +324,47 @@ class ModelManager {
    * creates new migrations, bookshelf models, and seeds for a model with specified name
    * @method ModalManager#generate
    * @param {String} name - name of model to create
-   * @memberof ModelManager
+   * @memberof DbItemsManager
    */
   generate(name) {
     this.name = name;
     this.ensureDirectory();
-
     this.generateModels();
     this.generateSeeds();
     this.generateMigrations();
   }
+  checkMigrationsConflict(name) {
+    const thingPath = path.resolve(`./experiments/${name}/migrations`);
+    const existingMigrationFiles = fs.readdirSync(thingPath);
+    return existingMigrationFiles.some(currentFile => {
+      const nameArray = currentFile.split('_');
+      return nameArray.indexOf(name) > -1;
+    });
+  }
+  migrationsConflict(name) {
+    const migrations_check = this.checkMigrationsConflict(name);
+    if (migrations_check) {
+      return true;
+    }
+    else {
+      return false;
+    }    
+  }
+  seedsConflict(name){
+    if (fs.existsSync(path.resolve(`./experiments/${name}/seeds`))) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  modelsConflict(name) {
+    if (fs.existsSync(path.resolve(`./experiments/${name}/models`))) {
+      return true;
+    }
+    else {
+      return false;
+    }    
+  }
 }
-module.exports = ModelManager;
+module.exports = dbItemsManager;

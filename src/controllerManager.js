@@ -9,13 +9,28 @@ const deleteQuestionPrompt = require('./inquirer');
  * @class ControllerManager
  */
 class ControllerManager {
+
+  conflict(name) {
+    if (fs.existsSync(path.resolve(`./experiments/${name}/controller/${name}`))) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   /**
    * logs a list of existing controllers
    * @method ControllerManager#showList
    * @memberof ControllerManager
    */
   showList() {
-    let controllers = fs.readdirSync(path.resolve(`./api/controllers`));
+    let controllers = [];
+    fs.readdirSync(path.resolve('./experiments')).forEach(exp => {
+      if (exp !== '.DS_Store' ) {
+        controllers.concat(fs.readdirSync(path.resolve(`./experiments/${exp}/controller`)));
+      }
+    });
     controllers.map(controller => logger.log(path.parse(controller).name));
   }
   /**
@@ -24,9 +39,9 @@ class ControllerManager {
    * @memberof ControllerManager
    */
   ensureDirectory() {
-    const isPushkin = fs.existsSync(path.resolve(`./api`));
+    const isPushkin = fs.existsSync(path.resolve(`./experiments`));
     if (!isPushkin) {
-      logger.error('Sorry couldnt find an api folder');
+      logger.error('Sorry couldn\'t find an experiments folder');
       throw new Error('Not a pushkin project');
     }
   }
@@ -38,12 +53,9 @@ class ControllerManager {
    * @returns {Boolean}
    */
   checkExistence(name) {
-    const controllerPath = path.resolve(`./api/controllers`);
+    const controllerPath = path.resolve(`./experiments/${name}/controller`);
+    fse.ensureDirSync(controllerPath);
     const to = fs.readdirSync(controllerPath);
-    if (!to) {
-      logger.error('Couldnt finda controllers folder tried,', controllerPath);
-      throw new Error('Couldnt find a controllers folder');
-    }
     const exist = to.some(currentFilename => {
       return currentFilename.indexOf(name) > -1;
     });
@@ -69,7 +81,7 @@ class ControllerManager {
    */
   copyTemplate(name) {
     fs.writeFileSync(
-      path.resolve(`./api/controllers/${name}.js`),
+      path.resolve(`./experiments/${name}/controller/${name}.js`),
       this.templateData
     );
   }
@@ -87,7 +99,7 @@ class ControllerManager {
     const isExists = this.checkExistence(name);
     if (isExists) {
       return logger.log(
-        chalk.red(`Sorry there is already a controller named ${name}`)
+        chalk.red(`there is already a controller named ${name}`)
       );
     }
     this.loadTemplate();
@@ -106,7 +118,7 @@ class ControllerManager {
         const isExists = this.checkExistence(name);
         if (isExists) {
           const targetFile = path.resolve(
-            `./api/controllers/${name}.js`
+            `./experiments/${name}/controller/${name}.js`
           );
           fs.unlink(targetFile, err => {
             if (err) {

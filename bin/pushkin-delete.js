@@ -4,7 +4,7 @@ const program = require('commander');
 const chalk = require('chalk');
 const WorkerManager = require('../src/workerManager');
 const ControllerManager = require('../src/controllerManager');
-const ModelManager = require('../src/modelManager');
+const DbItemsManager = require('../src/dbItemsManager');
 
 program.parse(process.argv);
 
@@ -19,8 +19,8 @@ if (thing && name) {
       break;
     }
     case 'model': {
-      const modelManager = new ModelManager();
-      modelManager.delete(name);
+      const dbItemsManager = new DbItemsManager();
+      dbItemsManager.delete(name);
       break;
     }
     case 'worker': {

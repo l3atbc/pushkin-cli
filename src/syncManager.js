@@ -7,7 +7,7 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const deleteQuestionPrompt = require('./inquirer');
 /**
- * @class ModelManager
+ * @class DbItemsManager
  */
 class SyncManager {
 

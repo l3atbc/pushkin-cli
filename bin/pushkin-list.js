@@ -3,7 +3,7 @@
 const program = require('commander');
 const chalk = require('chalk');
 const ControllerManager = require('../src/controllerManager');
-const ModelManager = require('../src/modelManager');
+const DbItemsManager = require('../src/dbItemsManager');
 
 program.parse(process.argv);
 
@@ -16,8 +16,8 @@ if (thing) {
       break;
     }
     case 'model': {
-      const modelManager = new ModelManager();
-      modelManager.showList();
+      const dbItemsManager = new DbItemsManager();
+      dbItemsManager.showList();
       break;
     }
     default:

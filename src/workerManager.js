@@ -12,14 +12,21 @@ module.exports = class WorkerManager {
     this.loadDockerPaths();
     this.loadOriginalDocuments();
   }
+  conflict(name) {
+    if (fs.existsSync(path.resolve(`./experiments/${name}/worker`))) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
   generate(name) {
     this.name = name;
-    this.folderName = `./workers/${name}`;
+    fse.ensureDirSync(path.resolve(`./experiments/${name}/worker`))
     this.createWorker();
     this.createNewDocuments();
     this.writeDocuments();
     this.copyFolder();
-    this.finish();
   }
   getCliPath(filePath) {
     return path.resolve(__dirname, filePath);
@@ -63,13 +70,13 @@ module.exports = class WorkerManager {
       worker = yaml.safeLoad(worker);
       worker.image = `DOCKERHUB_ID/${this.name}:latest`;
       worker.build.context = `./workers/${this.name}`;
-      worker.volumes[0] = `${this.folderName}:/usr/src/app`;
+      worker.volumes[0] = `./workers/${name}:/usr/src/app`;
       worker.environment[1] = `QUEUE=${this.name}`;
       this.worker = worker;
     } catch (e) {
-      logger.error('Couldnt find the worker.yml', worker, e);
+      logger.error('Couldn\'t find the worker.yml', worker, e);
 
-      throw new Error('Couldnt find the worker.yml');
+      throw new Error('Couldn\'t find the worker.yml');
     }
     try {
       productionWorker = fs.readFileSync(productionWorker, 'utf-8');
@@ -77,8 +84,8 @@ module.exports = class WorkerManager {
       productionWorker.environment[1] = `QUEUE=${this.name}`;
       this.productionWorker = productionWorker;
     } catch (e) {
-      logger.error('Couldnt find the production worker.yml', worker, e);
-      throw new Error('couldnt find the production worker.yml');
+      logger.error('Couldn\'t find the production worker.yml', worker, e);
+      throw new Error('couldn\'t find the production worker.yml');
     }
   }
   createNewDocuments() {
@@ -107,16 +114,13 @@ module.exports = class WorkerManager {
   }
   copyFolder() {
     const workerPath = path.resolve(__dirname, '../templates/python-worker');
-    ncp(workerPath, this.folderName, err => {
+    ncp(workerPath, `./experiments/${name}/worker`, err => {
       if (err) {
         this.handleError(err);
         // return process.exit(1)
       }
       logger.log('copy complete');
     });
-  }
-  finish() {
-    // process.exit()
   }
   handleError(error) {
     logger.error(error);
