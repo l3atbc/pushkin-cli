@@ -81,6 +81,7 @@ module.exports = class WorkerManager {
     try {
       productionWorker = fs.readFileSync(productionWorker, 'utf-8');
       productionWorker = yaml.safeLoad(productionWorker);
+      productionWorker.image = `DOCKERHUB_ID/${this.name}:latest`;
       productionWorker.environment[1] = `QUEUE=${this.name}`;
       this.productionWorker = productionWorker;
     } catch (e) {
