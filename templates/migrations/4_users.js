@@ -3,6 +3,7 @@ exports.up = function(knex) {
     table.increments().primary();
     table.timestamps();
     table.string('name');
+    table.string('auth0_id');
   });
 };
 
